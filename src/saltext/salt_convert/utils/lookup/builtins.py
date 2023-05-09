@@ -1,5 +1,4 @@
 def process_with_items(builtin_data, lookup_data):
-    import pudb; pu.db
     value = "{{ item }}"
     key_list = [key for key, val in builtin_data.items() if val == value]
     for key in key_list:

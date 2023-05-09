@@ -31,6 +31,8 @@ MOD_BUILTINS = {
     "service": saltext.salt_convert.utils.service.process_service,
     "ansible.builtin.service": saltext.salt_convert.utils.service.process_service,
     "seboolean": saltext.salt_convert.utils.selinux.process_selinux,
+    "ansible.posix.seboolean": saltext.salt_convert.utils.selinux.process_selinux,
+
 }
 
 

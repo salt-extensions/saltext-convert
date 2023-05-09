@@ -4,7 +4,6 @@ import saltext.salt_convert.utils.lookup.builtins as lookup_builtin
 def process_selinux(builtin_data, task):
     selinux_state = "selinux.boolean"
 
-    import pudb; pu.db
     for item in task:
         if item in lookup_builtin.LOOKUP_BUILTINS:
             lookup_data = task[item]
