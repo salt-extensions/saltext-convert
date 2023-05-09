@@ -1,5 +1,5 @@
-import yaml
 import saltext.salt_convert.runners.salt_convert as salt_convert_runner
+import yaml
 
 
 def test_selinux_playbook_to_sls(tmp_path):
@@ -13,10 +13,10 @@ def test_selinux_playbook_to_sls(tmp_path):
         yaml.dump(
           [
             {
-              "name": "Set httpd_can_network_connect", 
+              "name": "Set httpd_can_network_connect",
               "ansible.posix.seboolean": {
-                "state": "true", 
-                "name": "httpd_can_network_connect", 
+                "state": "true",
+                "name": "httpd_can_network_connect",
                 "persistent": "true"
               }
             }

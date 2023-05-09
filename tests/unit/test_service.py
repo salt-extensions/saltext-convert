@@ -1,5 +1,5 @@
-import yaml
 import saltext.salt_convert.runners.salt_convert as salt_convert_runner
+import yaml
 
 
 def test_service_playbook_to_sls(tmp_path):

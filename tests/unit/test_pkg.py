@@ -1,5 +1,5 @@
-import yaml
 import saltext.salt_convert.runners.salt_convert as salt_convert_runner
+import yaml
 
 
 def test_pkg_playbook_to_sls(tmp_path):
@@ -14,15 +14,15 @@ def test_pkg_playbook_to_sls(tmp_path):
          {
            "tasks": [
              {
-               "name": "postgresql latest version", 
+               "name": "postgresql latest version",
                "ansible.builtin.yum": {
                  "state": "latest",
                  "name": "postgresql"
                }
-             }, 
-           ], 
-           "hosts": "databases", 
-           "remote_user": "root", 
+             },
+           ],
+           "hosts": "databases",
+           "remote_user": "root",
            "name": "db servers"
          }], fp)
 
