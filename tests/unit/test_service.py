@@ -1,3 +1,5 @@
+import locale
+
 import saltext.salt_convert.runners.salt_convert as salt_convert_runner
 import yaml
 
@@ -9,7 +11,7 @@ def test_service_playbook_to_sls(tmp_path):
     """
     playbook=tmp_path / "service-playbook.yml"
 
-    with open(playbook, "w") as fp:
+    with open(file=playbook, mode="w", encoding=locale.getencoding()) as fp_:
         yaml.dump([
           {
               "tasks": [
@@ -23,11 +25,11 @@ def test_service_playbook_to_sls(tmp_path):
               "remote_user": "root",
               "name": "db servers"
             }
-        ], fp)
+        ], fp_)
 
     sls_file = salt_convert_runner.files(path=playbook)["Converted playbooks to sls files"][0]
-    with open(sls_file, "r") as fp:
-        ret = yaml.safe_load(fp)
+    with open(file=sls_file, mode="r", encoding=locale.getencoding()) as fp_:
+        ret = yaml.safe_load(fp_)
 
     assert ret == {'Ensure that postgresql is started': {'service.running':
                                                          [{'name':
