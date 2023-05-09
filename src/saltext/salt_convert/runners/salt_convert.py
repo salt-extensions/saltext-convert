@@ -6,6 +6,7 @@ Module for converting to state file
 .. versionadded:: 0.1
 
 """
+import importlib
 import logging
 import os
 import pathlib
@@ -14,30 +15,33 @@ import re
 import salt.daemons.masterapi  # pylint: disable=import-error
 import salt.utils.files  # pylint: disable=import-error
 import yaml
-import pprint
-import saltext.salt_convert.utils.pkg
-import saltext.salt_convert.utils.selinux
-import saltext.salt_convert.utils.service
 
 
 __virtualname__ = "convert"
 
 log = logging.getLogger(__name__)
 
-MOD_BUILTINS = {
-    "yum": saltext.salt_convert.utils.pkg.process_pkg,
-    "dnf": saltext.salt_convert.utils.pkg.process_pkg,
-    "ansible.builtin.yum": saltext.salt_convert.utils.pkg.process_pkg,
-    "service": saltext.salt_convert.utils.service.process_service,
-    "ansible.builtin.service": saltext.salt_convert.utils.service.process_service,
-    "seboolean": saltext.salt_convert.utils.selinux.process_selinux,
-    "ansible.posix.seboolean": saltext.salt_convert.utils.selinux.process_selinux,
-
-}
-
 
 def __virtual__():
     return __virtualname__
+
+
+def _setup_modules():
+    """
+    Load the utility modules
+    """
+    MOD_BUILTINS = {}
+    path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils'))
+    for f in os.listdir(path):
+        fname, ext = os.path.splitext(f)
+        if ext == ".py":
+            mod_name = f"saltext.salt_convert.utils.{fname}"
+            setup_func = f"{mod_name}._setup"
+            imported_mod = importlib.import_module(mod_name)
+            mods = imported_mod._setup()
+            for _mod  in mods:
+                MOD_BUILTINS[_mod] = imported_mod.process
+    return MOD_BUILTINS
 
 
 def generate_files(state, sls_name="default", env="base"):
@@ -63,6 +67,8 @@ def generate_files(state, sls_name="default", env="base"):
 
 
 def files(path=None):
+    MOD_BUILTINS = _setup_modules()
+
     _files = []
     if not isinstance(path, dict):
         _files = [path]

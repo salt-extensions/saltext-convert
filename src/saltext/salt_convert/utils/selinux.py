@@ -1,7 +1,12 @@
 import saltext.salt_convert.utils.lookup.builtins as lookup_builtin
 
 
-def process_selinux(builtin_data, task):
+def _setup():
+    return ["seboolean",
+            "ansible.posix.seboolean"]
+
+
+def process(builtin_data, task):
     selinux_state = "selinux.boolean"
 
     for item in task:

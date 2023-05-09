@@ -1,7 +1,13 @@
 import saltext.salt_convert.utils.lookup.builtins as lookup_builtin
 
 
-def process_service(builtin_data, task):
+def _setup():
+    return ["service",
+            "ansible.builtin.service"
+            ]
+
+
+def process(builtin_data, task):
     service_states = {"started": "service.running",
                   "stopped": "service.dead"}
 
