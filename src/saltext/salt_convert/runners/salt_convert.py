@@ -23,6 +23,9 @@ log = logging.getLogger(__name__)
 
 
 def __virtual__():
+    """
+    Virtual function
+    """
     return __virtualname__
 
 
@@ -30,21 +33,20 @@ def _setup_modules():
     """
     Load the utility modules
     """
-    MOD_BUILTINS = {}
-    path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils'))
-    for f in os.listdir(path):
-        fname, ext = os.path.splitext(f)
+    mod_builtins = {}
+    utils_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils'))
+    for util_path in os.listdir(utils_path):
+        fname, ext = os.path.splitext(util_path)
         if ext == ".py":
             mod_name = f"saltext.salt_convert.utils.{fname}"
-            setup_func = f"{mod_name}._setup"
             imported_mod = importlib.import_module(mod_name)
             mods = imported_mod._setup()
             for _mod  in mods:
-                MOD_BUILTINS[_mod] = imported_mod.process
-    return MOD_BUILTINS
+                mod_builtins[_mod] = imported_mod.process
+    return mod_builtins
 
 
-def generate_files(state, sls_name="default", env="base"):
+def generate_files(state, sls_name="default"):
     """
     Generate an sls file for the minion with given state contents
     """
@@ -53,7 +55,8 @@ def generate_files(state, sls_name="default", env="base"):
         minion_state_root.mkdir(parents=True, exist_ok=True)
     except PermissionError:
         log.warning(
-            f"Unable to create directory {str(minion_state_root)}.  Check that the salt user has the correct permissions."
+            f"Unable to create directory {str(minion_state_root)}.  "
+            "Check that the salt user has the correct permissions."
         )
         return False
 
@@ -67,7 +70,7 @@ def generate_files(state, sls_name="default", env="base"):
 
 
 def files(path=None):
-    MOD_BUILTINS = _setup_modules()
+    mod_builtins = _setup_modules()
 
     _files = []
     if not isinstance(path, dict):
@@ -98,13 +101,13 @@ def files(path=None):
                     for task in tasks:
                         task_name = task.pop("name")
                         for builtin in task:
-                            builtin_func = MOD_BUILTINS.get(builtin)
+                            builtin_func = mod_builtins.get(builtin)
                             if builtin_func:
                                 state_contents[task_name] = builtin_func(task[builtin], task)
                 else:
                     task_name = block.pop("name")
                     for builtin in block:
-                        builtin_func = MOD_BUILTINS.get(builtin)
+                        builtin_func = mod_builtins.get(builtin)
                         if builtin_func:
                             state_contents[task_name] = builtin_func(block[builtin], block)
             state_name = re.sub(".yml", "", f"{os.path.basename(_file)}")
