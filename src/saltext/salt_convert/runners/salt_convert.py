@@ -3,7 +3,7 @@
 """
 Module for converting to state file
 
-.. versionadded:: 0.1
+.. versionadded:: 0.0.1
 
 """
 import importlib

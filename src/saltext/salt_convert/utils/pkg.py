@@ -3,7 +3,7 @@
 """
 Module for converting state file
 
-.. versionadded:: 0.1
+.. versionadded:: 0.0.1
 
 """
 import saltext.salt_convert.utils.lookup.builtins as lookup_builtin
