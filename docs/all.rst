@@ -4,13 +4,4 @@ Complete List of salt-convert
 =============================
 
 
-.. toctree::
-   :maxdepth: 2
 
-   ref/modules.rst
-
-
-.. toctree::
-   :maxdepth: 2
-
-   ref/states.rst
