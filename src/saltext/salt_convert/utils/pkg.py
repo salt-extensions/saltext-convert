@@ -13,19 +13,14 @@ def _setup():
     """
     Return the builtins this module should support
     """
-    return ["yum",
-            "ansible.builtin.yum",
-            "ansible.builtin.dnf",
-            "dnf"]
+    return ["yum", "ansible.builtin.yum", "ansible.builtin.dnf", "dnf"]
 
 
 def process(builtin_data, task):
     """
     Process tasks into Salt states
     """
-    pkg_states = {"present": "pkg.installed",
-                  "latest": "pkg.latest",
-                  "absent": "pkg.removed"}
+    pkg_states = {"present": "pkg.installed", "latest": "pkg.latest", "absent": "pkg.removed"}
 
     for item in task:
         if item in lookup_builtin.LOOKUP_BUILTINS:

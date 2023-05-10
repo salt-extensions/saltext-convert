@@ -34,14 +34,14 @@ def _setup_modules():
     Load the utility modules
     """
     mod_builtins = {}
-    utils_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils'))
+    utils_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "utils"))
     for util_path in os.listdir(utils_path):
         fname, ext = os.path.splitext(util_path)
         if ext == ".py":
             mod_name = f"saltext.salt_convert.utils.{fname}"
             imported_mod = importlib.import_module(mod_name)
             mods = imported_mod._setup()
-            for _mod  in mods:
+            for _mod in mods:
                 mod_builtins[_mod] = imported_mod.process
     return mod_builtins
 
@@ -65,7 +65,7 @@ def generate_files(state, sls_name="default"):
     with salt.utils.files.fopen(minion_state_file, "w") as fp_:
         fp_.write(state)
 
-    #generate_init(opts, minion, env=env)
+    # generate_init(opts, minion, env=env)
     return minion_state_file
 
 
@@ -111,7 +111,6 @@ def files(path=None):
                         if builtin_func:
                             state_contents[task_name] = builtin_func(block[builtin], block)
             state_name = re.sub(".yml", "", f"{os.path.basename(_file)}")
-            state_yaml =  yaml.dump(state_contents)
-            sls_files.append(generate_files(state=state_yaml,
-                                            sls_name=state_name))
+            state_yaml = yaml.dump(state_contents)
+            sls_files.append(generate_files(state=state_yaml, sls_name=state_name))
     return {"Converted playbooks to sls files": [str(x) for x in sls_files]}

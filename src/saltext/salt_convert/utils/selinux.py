@@ -13,8 +13,7 @@ def _setup():
     """
     Return the builtins this module should support
     """
-    return ["seboolean",
-            "ansible.posix.seboolean"]
+    return ["seboolean", "ansible.posix.seboolean"]
 
 
 def process(builtin_data, task):
@@ -29,11 +28,18 @@ def process(builtin_data, task):
             lookup_builtin.LOOKUP_BUILTINS[item](builtin_data, lookup_data)
 
     if "persistent" in builtin_data:
-        state_contents = {selinux_state: [{"name": builtin_data["name"],
-                                           "value": builtin_data["state"],
-                                           "persist": builtin_data["persistent"]}]}
+        state_contents = {
+            selinux_state: [
+                {
+                    "name": builtin_data["name"],
+                    "value": builtin_data["state"],
+                    "persist": builtin_data["persistent"],
+                }
+            ]
+        }
     else:
-        state_contents = {selinux_state: [{"name": builtin_data["name"],
-                                           "value": builtin_data["state"]}]}
+        state_contents = {
+            selinux_state: [{"name": builtin_data["name"], "value": builtin_data["state"]}]
+        }
 
     return state_contents
