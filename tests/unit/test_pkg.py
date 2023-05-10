@@ -11,7 +11,7 @@ def test_pkg_playbook_to_sls(tmp_path):
     """
     playbook = tmp_path / "service-playbook.yml"
 
-    with open(file=playbook, mode="w", encoding=locale.getencoding()) as fp_:
+    with open(file=playbook, mode="w", encoding=locale.getpreferredencoding()) as fp_:
         yaml.dump(
             [
                 {
