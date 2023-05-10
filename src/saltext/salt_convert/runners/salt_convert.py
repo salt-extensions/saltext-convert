@@ -46,11 +46,19 @@ def _setup_modules():
     return mod_builtins
 
 
-def generate_files(state, sls_name="default"):
+def get_state_file_root(env="base"):
+    """
+    Get the state file root
+    """
+    return pathlib.Path(__opts__.get("file_roots").get(env)[0])
+
+
+def generate_files(state, sls_name="default", env="base"):
     """
     Generate an sls file for the minion with given state contents
     """
-    minion_state_root = pathlib.Path("/srv/salt/ansible_convert")
+    minion_state_root = get_state_file_root(env=env) / "ansible_convert"
+
     try:
         minion_state_root.mkdir(parents=True, exist_ok=True)
     except PermissionError:

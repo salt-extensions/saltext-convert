@@ -30,7 +30,7 @@ def test_pkg_playbook_to_sls(tmp_path):
         )
 
     sls_file = salt_convert_runner.files(path=playbook)["Converted playbooks to sls files"][0]
-    with open(file=sls_file, encoding=locale.getencoding()) as fp_:
+    with open(file=sls_file, encoding=locale.getpreferredencoding()) as fp_:
         ret = yaml.safe_load(fp_)
 
     assert ret == {"postgresql latest version": {"pkg.latest": [{"pkgs": "postgresql"}]}}
