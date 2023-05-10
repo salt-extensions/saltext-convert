@@ -133,7 +133,7 @@ jobs:
       - pre-commit
       - test
       - docs
-      - build-python-package
+#      - build-python-package
 #      - deploy-python-package-test-pypi
 #      - deploy-python-package
 #      - push-tag
