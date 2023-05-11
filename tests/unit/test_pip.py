@@ -23,19 +23,17 @@ def test_pip_playbook_to_sls(tmp_path):
     with open(file=playbook, mode="w", encoding=locale.getpreferredencoding()) as fp_:
         yaml.dump(
             [
-              {
-                "tasks": [
-                  {
-                    "ansible.builtin.pip": {
-                      "name": "bottle"
-                    }, 
-                    "name": "Install bottle python package"
-                  }
-                ], 
-                "hosts": "pocminion", 
-                "remote_user": "root", 
-                "name": "Update web servers"
-              }
+                {
+                    "tasks": [
+                        {
+                            "ansible.builtin.pip": {"name": "bottle"},
+                            "name": "Install bottle python package",
+                        }
+                    ],
+                    "hosts": "pocminion",
+                    "remote_user": "root",
+                    "name": "Update web servers",
+                }
             ],
             fp_,
         )
@@ -44,4 +42,4 @@ def test_pip_playbook_to_sls(tmp_path):
     with open(file=sls_file, encoding=locale.getpreferredencoding()) as fp_:
         ret = yaml.safe_load(fp_)
 
-    assert ret == {'Install bottle python package': {'pip.installed': [{'name': 'bottle'}]}}
+    assert ret == {"Install bottle python package": {"pip.installed": [{"name": "bottle"}]}}
