@@ -24,33 +24,35 @@ def test_user_group_playbook_to_sls(tmp_path):
     with open(file=playbook, mode="w", encoding=locale.getpreferredencoding()) as fp_:
         yaml.dump(
             [
-              {
-                "tasks": [
-                  {
-                    "ansible.builtin.group": {
-                      "state": "present", 
-                      "name": "admin"
-                    }, 
-                    "name": "Add \"admin\" group"
-                  }, 
-                  {
-                    "ansible.builtin.user": {
-                      "comment": "Sally Joe", 
-                      "group": "admin", 
-                      "name": "sally", 
-                      "uid": 1041
-                    }, 
-                    "name": "Add user \"sally\""
-                  }
-                ], 
-                "hosts": "pocminion", 
-                "remote_user": "root", 
-                "name": "Add user and group"
-              }
-            ], fp_)
+                {
+                    "tasks": [
+                        {
+                            "ansible.builtin.group": {"state": "present", "name": "admin"},
+                            "name": 'Add "admin" group',
+                        },
+                        {
+                            "ansible.builtin.user": {
+                                "comment": "Sally Joe",
+                                "group": "admin",
+                                "name": "sally",
+                                "uid": 1041,
+                            },
+                            "name": 'Add user "sally"',
+                        },
+                    ],
+                    "hosts": "pocminion",
+                    "remote_user": "root",
+                    "name": "Add user and group",
+                }
+            ],
+            fp_,
+        )
 
     sls_file = salt_convert_runner.files(path=playbook)["Converted playbooks to sls files"][0]
     with open(file=sls_file, encoding=locale.getpreferredencoding()) as fp_:
         ret = yaml.safe_load(fp_)
 
-    assert ret == {'Add "admin" group': {'group.present': [{'groups': 'admin'}]}, 'Add user "sally"': {'user.present': [{'users': 'sally'}]}}
+    assert ret == {
+        'Add "admin" group': {"group.present": [{"groups": "admin"}]},
+        'Add user "sally"': {"user.present": [{"users": "sally"}]},
+    }
