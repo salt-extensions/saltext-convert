@@ -57,10 +57,14 @@ confidence=
 #disable=
 disable=R,
   I0011,
+  I0012,
   I0013,
   C0330,
+  E8116,
+  E812,
   wrong-import-position,
   wrong-import-order,
+  un-indexed-curly-braces-error
 
 # Disabled:
 # R* [refactoring suggestions & reports]
