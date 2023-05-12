@@ -16,16 +16,12 @@ def _setup():
     return ["seboolean", "ansible.posix.seboolean"]
 
 
+@lookup_builtin.lookup_decorator
 def process(builtin_data, task):
     """
     Process tasks into Salt states
     """
     selinux_state = "selinux.boolean"
-
-    for item in task:
-        if item in lookup_builtin.LOOKUP_BUILTINS:
-            lookup_data = task[item]
-            lookup_builtin.LOOKUP_BUILTINS[item](builtin_data, lookup_data)
 
     if "persistent" in builtin_data:
         state_contents = {

@@ -16,16 +16,12 @@ def _setup():
     return ["ansible.builtin.group"]
 
 
+@lookup_builtin.lookup_decorator
 def process(builtin_data, task):
     """
     Process tasks into Salt states
     """
     group_states = {"present": "group.present", "absent": "group.absent"}
-
-    for item in task:
-        if item in lookup_builtin.LOOKUP_BUILTINS:
-            lookup_data = task[item]
-            lookup_builtin.LOOKUP_BUILTINS[item](builtin_data, lookup_data)
 
     state_contents = {group_states[builtin_data["state"]]: [{"groups": builtin_data["name"]}]}
     return state_contents

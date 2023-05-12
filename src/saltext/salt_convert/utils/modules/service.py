@@ -16,16 +16,12 @@ def _setup():
     return ["service", "ansible.builtin.service"]
 
 
+@lookup_builtin.lookup_decorator
 def process(builtin_data, task):
     """
     Process tasks into Salt states
     """
     service_states = {"started": "service.running", "stopped": "service.dead"}
-
-    for item in task:
-        if item in lookup_builtin.LOOKUP_BUILTINS:
-            lookup_data = task[item]
-            lookup_builtin.LOOKUP_BUILTINS[item](builtin_data, lookup_data)
 
     if "enabled" in builtin_data:
         state_contents = {
