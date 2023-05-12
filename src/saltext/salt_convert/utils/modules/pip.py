@@ -6,7 +6,7 @@ Module for converting state file
 .. versionadded:: 0.0.1
 
 """
-import saltext.salt_convert.utils.lookup.builtins as lookup_builtin
+import saltext.salt_convert.utils.lookup as lookup_builtins
 
 
 def _setup():
@@ -16,7 +16,7 @@ def _setup():
     return ["pip", "ansible.builtin.pip"]
 
 
-@lookup_builtin.lookup_decorator
+@lookup_builtins.lookup_decorator
 def process(builtin_data, task):
     """
     Process tasks into Salt states
