@@ -34,11 +34,11 @@ def _setup_modules():
     Load the utility modules
     """
     mod_builtins = {}
-    utils_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "utils"))
+    utils_path = pathlib.Path(__file__).parent.parent / "utils" / "modules"
     for util_path in os.listdir(utils_path):
         fname, ext = os.path.splitext(util_path)
         if ext == ".py":
-            mod_name = f"saltext.salt_convert.utils.{fname}"
+            mod_name = f"saltext.salt_convert.utils.modules.{fname}"
             imported_mod = importlib.import_module(mod_name)
             mods = imported_mod._setup()
             for _mod in mods:
