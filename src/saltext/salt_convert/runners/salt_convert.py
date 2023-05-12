@@ -40,9 +40,10 @@ def _setup_modules():
         if ext == ".py":
             mod_name = f"saltext.salt_convert.utils.modules.{fname}"
             imported_mod = importlib.import_module(mod_name)
-            mods = imported_mod._setup()
-            for _mod in mods:
-                mod_builtins[_mod] = imported_mod.process
+            if hasattr(imported_mod, "_setup"):
+                mods = imported_mod._setup()
+                for _mod in mods:
+                    mod_builtins[_mod] = imported_mod.process
     return mod_builtins
 
 

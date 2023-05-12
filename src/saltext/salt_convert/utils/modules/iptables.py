@@ -10,7 +10,7 @@ import inspect
 
 import salt.states.iptables
 import saltext.salt_convert.utils.inspect
-import saltext.salt_convert.utils.lookup.builtins as lookup_builtin
+import saltext.salt_convert.utils.lookup as lookup_builtins
 
 
 def _setup():
@@ -20,6 +20,7 @@ def _setup():
     return ["ansible.builtin.iptables", "iptables"]
 
 
+@lookup_builtins.lookup_decorator
 def process(builtin_data, task):
     """
     Process tasks into Salt states
@@ -29,11 +30,6 @@ def process(builtin_data, task):
     # manually add the args that are not automatically inspected further down
     # usually due to **kwargs usage or a mismatch in name
     match_args = {"chain": "chain", "source": "source", "jump": "jump"}
-
-    for item in task:
-        if item in lookup_builtin.LOOKUP_BUILTINS:
-            lookup_data = task[item]
-            lookup_builtin.LOOKUP_BUILTINS[item](builtin_data, lookup_data)
 
     state = builtin_data.get("state")
 
