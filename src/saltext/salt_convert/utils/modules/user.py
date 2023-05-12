@@ -16,16 +16,12 @@ def _setup():
     return ["ansible.builtin.user"]
 
 
+@lookup_builtin.lookup_decorator
 def process(builtin_data, task):
     """
     Process tasks into Salt states
     """
     user_states = {"present": "user.present", "absent": "user.absent"}
-
-    for item in task:
-        if item in lookup_builtin.LOOKUP_BUILTINS:
-            lookup_data = task[item]
-            lookup_builtin.LOOKUP_BUILTINS[item](builtin_data, lookup_data)
 
     state = builtin_data.get("state")
     if not state:

@@ -8,6 +8,17 @@ Built in helper functions
 """
 
 
+def lookup_decorator(func):
+    def wrapper(builtin_data, task):
+        for item in task:
+            if item in LOOKUP_BUILTINS:
+                lookup_data = task[item]
+                LOOKUP_BUILTINS[item](builtin_data, lookup_data)
+        return func(builtin_data, task)
+
+    return wrapper
+
+
 def process_with_items(builtin_data, lookup_data):
     """
     Handle lookup builtin items
