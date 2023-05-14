@@ -19,7 +19,7 @@ def _setup_lookup_modules():
     utils_path = pathlib.Path(__file__).parent
     for util_path in os.listdir(utils_path):
         fname, ext = os.path.splitext(util_path)
-        if ext == ".py":
+        if ext == ".py" and not fname.startswith("."):
             mod_name = f"saltext.salt_convert.utils.lookup.{fname}"
             imported_mod = importlib.import_module(mod_name)
             if hasattr(imported_mod, "_setup"):
@@ -35,7 +35,7 @@ def lookup_decorator(func):
         for item in task:
             if item in lookup_builtins:
                 lookup_data = task[item]
-                lookup_builtins[item](builtin_data, lookup_data)
+                builtin_data = lookup_builtins[item](builtin_data, lookup_data)
         return func(builtin_data, task)
 
     return wrapper

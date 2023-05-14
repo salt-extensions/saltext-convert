@@ -37,7 +37,7 @@ def _setup_modules():
     utils_path = pathlib.Path(__file__).parent.parent / "utils" / "modules"
     for util_path in os.listdir(utils_path):
         fname, ext = os.path.splitext(util_path)
-        if ext == ".py":
+        if ext == ".py" and not fname.startswith("."):
             mod_name = f"saltext.salt_convert.utils.modules.{fname}"
             imported_mod = importlib.import_module(mod_name)
             if hasattr(imported_mod, "_setup"):
@@ -98,12 +98,18 @@ def files(path=None):
 
     state_contents = {}
     sls_files = []
+    _vars = {}
+    breakpoint()
     for _file in _files:
         if not _file.is_file():
             log.error(f"File {_file} does not exist, skipping")
             continue
         with salt.utils.files.fopen(_file, "r") as fp_:
             json_data = yaml.safe_load(fp_.read())
+            for block in json_data:
+                if "vars_files" in block:
+                    _vars = handle_vars(block["vars_files"])
+
             for block in json_data:
                 if "tasks" in block:
                     tasks = block["tasks"]
@@ -123,3 +129,29 @@ def files(path=None):
             state_yaml = yaml.dump(state_contents)
             sls_files.append(generate_files(state=state_yaml, sls_name=state_name))
     return {"Converted playbooks to sls files": [str(x) for x in sls_files]}
+
+
+def handle_vars(path=None):
+
+    _vars = {}
+    _files = []
+    if not isinstance(path, list):
+        _files = [path]
+    else:
+        _files = path
+
+    _files = [pathlib.Path(x) for x in _files]
+    # check if directory and add each file to _files dict
+    for _file in _files:
+        if _file.is_dir():
+            for _path in _file.iterdir():
+                _files.append(_path)
+                if _file in _files:
+                    _files.remove(_file)
+
+    for _file in _files:
+        with salt.utils.files.fopen(_file, "r") as fp_:
+            json_data = yaml.safe_load(fp_.read())
+            _vars.update(json_data)
+
+    return _vars
