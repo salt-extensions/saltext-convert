@@ -1,0 +1,22 @@
+service:
+  modules: {"salt": "salt.states.service", "ansible": "ansible.modules.service"}
+  functions: {"started": "service.running", "stopped": "service.dead"}
+pip:
+  modules: {"salt": "salt.states.pip_state", "ansible": "ansible.modules.pip"}
+  functions: {"absent": "pip.removed", "present": "pip.installed"}
+group:
+  modules: {"salt": "salt.states.group", "ansible": "ansible.modules.group"}
+  functions: {"present": "group.present", "absent": "group.absent"}
+user:
+  modules: {"salt": "salt.states.user", "ansible": "ansible.modules.user"}
+  functions: {"present": "user.present", "absent": "user.absent"}
+iptables:
+  modules: {"salt": "salt.states.iptables", "ansible": "ansible.modules.iptables"}
+  functions: {"present": "iptables.append", "absent": "iptables.delete"}
+pkg:
+  modules: {"salt": "salt.states.pkg", "ansible": "ansible.modules.pkg"}
+  functions: {"present": "pkg.installed", "latest": "pkg.latest", "absent": "pkg.removed"}
+git:
+  modules: {"salt": "salt.states.git", "ansible": "ansible.modules.git"}
+  functions: {"false": "git.cloned"}
+  manual_args: {"repo": "name", "dest": "target", "version": "branch"}
