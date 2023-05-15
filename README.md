@@ -1,6 +1,6 @@
-# salt-convert
+# saltext-convert
 
-Tool to convert other configuration management systems to Salt states
+Salt runner to convert other configuration management systems to Salt states
 
 ## Quickstart
 
