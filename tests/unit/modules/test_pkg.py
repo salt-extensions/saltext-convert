@@ -129,10 +129,11 @@ def test_pkg_playbook_to_sls_apt_dict(tmp_path):
                     "tasks": [
                         {
                             "name": "postgresql latest version",
-                            "ansible.builtin.apt": {"state": "latest",
-                                                    "name": "postgresql",
-                                                    "update_cache": "yes",
-                                                    "force_apt_get": "yes"
+                            "ansible.builtin.apt": {
+                                "state": "latest",
+                                "name": "postgresql",
+                                "update_cache": "yes",
+                                "force_apt_get": "yes",
                             },
                         },
                     ],

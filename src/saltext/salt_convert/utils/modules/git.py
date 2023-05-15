@@ -29,15 +29,16 @@ def process(builtin_data, task):
     # state as an arg
     state = "false"
     state_args = []
-    git_states = {'false': 'git.cloned'}
+    git_states = {"false": "git.cloned"}
     # manually add the args that are not automatically inspected further down
     # usually due to **kwargs usage or a mismatch in name
-    match_args = {'repo': 'name', 'dest': 'target', 'version': 'branch'}
+    match_args = {"repo": "name", "dest": "target", "version": "branch"}
 
-    
     _, _func = git_states[state].split(".")
     salt_args = saltext.salt_convert.utils.inspect.function_args(
-        salt.states.git, _func, builtin_data,
+        salt.states.git,
+        _func,
+        builtin_data,
     )
 
     for _arg in salt_args:
