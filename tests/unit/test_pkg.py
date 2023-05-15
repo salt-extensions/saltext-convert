@@ -83,7 +83,7 @@ def test_pkg_playbook_to_sls_with_items(tmp_path):
     }
 
 
-def test_pkg_playbook_to_sls_apt(tmp_path):
+def test_pkg_playbook_to_sls_apt_string(tmp_path):
     """
     Test converting a pkg playbook
     to sls file
@@ -112,4 +112,40 @@ def test_pkg_playbook_to_sls_apt(tmp_path):
     with open(file=sls_file, encoding=locale.getpreferredencoding()) as fp_:
         ret = yaml.safe_load(fp_)
 
-    assert ret == {"postgresql latest version": {"pkg.latest": [{"pkgs": ["postgresql"]}]}}
+    assert ret == {"postgresql latest version": {"pkg.latest": [{"pkgs": "postgresql"}]}}
+
+
+def test_pkg_playbook_to_sls_apt_dict(tmp_path):
+    """
+    Test converting a pkg playbook
+    to sls file
+    """
+    playbook = tmp_path / "service-playbook.yml"
+
+    with open(file=playbook, mode="w", encoding=locale.getpreferredencoding()) as fp_:
+        yaml.dump(
+            [
+                {
+                    "tasks": [
+                        {
+                            "name": "postgresql latest version",
+                            "ansible.builtin.apt": {"state": "latest",
+                                                    "name": "postgresql",
+                                                    "update_cache": "yes",
+                                                    "force_apt_get": "yes"
+                            },
+                        },
+                    ],
+                    "hosts": "databases",
+                    "remote_user": "root",
+                    "name": "db servers",
+                }
+            ],
+            fp_,
+        )
+
+    sls_file = salt_convert_runner.files(path=playbook)["Converted playbooks to sls files"][0]
+    with open(file=sls_file, encoding=locale.getpreferredencoding()) as fp_:
+        ret = yaml.safe_load(fp_)
+
+    assert ret == {"postgresql latest version": {"pkg.latest": [{"pkgs": "postgresql"}]}}

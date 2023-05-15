@@ -46,8 +46,11 @@ def _process_apt(pkg_states, builtin_data, task):
 
         apt_args_dict = {item[0]: item[1] for item in [arg.split("=") for arg in apt_args]}
 
+        _pkgs = apt_args_dict["name"].split(",")
+        if len(_pkgs) == 1:
+            _pkgs = _pkgs[0]
         state_contents = {
-            pkg_states[apt_args_dict["state"]]: [{"pkgs": apt_args_dict["name"].split(",")}]
+            pkg_states[apt_args_dict["state"]]: [{"pkgs": _pkgs}]
         }
     else:
         state_contents = {pkg_states[builtin_data["state"]]: [{"pkgs": builtin_data["name"]}]}
