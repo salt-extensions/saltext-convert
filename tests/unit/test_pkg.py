@@ -81,3 +81,35 @@ def test_pkg_playbook_to_sls_with_items(tmp_path):
             "pkg.latest": [{"pkgs": ["httpd", "php", "php-mysql", "git"]}]
         }
     }
+
+
+def test_pkg_playbook_to_sls_apt(tmp_path):
+    """
+    Test converting a pkg playbook
+    to sls file
+    """
+    playbook = tmp_path / "service-playbook.yml"
+
+    with open(file=playbook, mode="w", encoding=locale.getpreferredencoding()) as fp_:
+        yaml.dump(
+            [
+                {
+                    "tasks": [
+                        {
+                            "name": "postgresql latest version",
+                            "ansible.builtin.apt": "name=postgresql update_cache=yes state=latest force_apt_get=yes",
+                        },
+                    ],
+                    "hosts": "databases",
+                    "remote_user": "root",
+                    "name": "db servers",
+                }
+            ],
+            fp_,
+        )
+
+    sls_file = salt_convert_runner.files(path=playbook)["Converted playbooks to sls files"][0]
+    with open(file=sls_file, encoding=locale.getpreferredencoding()) as fp_:
+        ret = yaml.safe_load(fp_)
+
+    assert ret == {"postgresql latest version": {"pkg.latest": [{"pkgs": ["postgresql"]}]}}

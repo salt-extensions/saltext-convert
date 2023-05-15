@@ -99,7 +99,6 @@ def files(path=None):
     state_contents = {}
     sls_files = []
     _vars = {}
-    breakpoint()
     for _file in _files:
         if not _file.is_file():
             log.error(f"File {_file} does not exist, skipping")

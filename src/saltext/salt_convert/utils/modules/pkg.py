@@ -28,10 +28,9 @@ def process(builtin_data, task):
     """
     Process tasks into Salt states
     """
-    breakpoint()
     pkg_states = {"present": "pkg.installed", "latest": "pkg.latest", "absent": "pkg.removed"}
 
-    if "apt" in task:
+    if "apt" in task or "ansible.builtin.apt" in task:
         state_contents = _process_apt(pkg_states, builtin_data, task)
     else:
         state_contents = {pkg_states[builtin_data["state"]]: [{"pkgs": builtin_data["name"]}]}
