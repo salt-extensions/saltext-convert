@@ -104,7 +104,11 @@ def gen_code(map_file=None, module=None, force=False):
         content = _render_jinja(template, context=context)
         # Render string formatting
         content = content.format(
-            other_name=other_name, state_name=state_name, func_map=func_map, arg_map=arg_map
+            other_name=other_name,
+            salt_module=salt_module,
+            func_map=func_map,
+            arg_map=arg_map,
+            state_name=state_name,
         )
 
         with salt.utils.files.fopen(str(utils_path / module_name), "w") as fp_:

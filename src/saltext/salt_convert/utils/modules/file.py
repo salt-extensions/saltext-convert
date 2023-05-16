@@ -29,19 +29,17 @@ def process(builtin_data, task):
     Process tasks into Salt states
     """
     state_args = []
-    file_states = {"file": "file.managed",
-                  "directory": "file.directory",
-                  "hard": "file.hardlink",
-                  "link": "file.symlink",
-                  "touch": "file.touch"}
+    file_states = {
+        "file": "file.managed",
+        "directory": "file.directory",
+        "hard": "file.hardlink",
+        "link": "file.symlink",
+        "touch": "file.touch",
+    }
 
     # manually add the args that are not automatically inspected further down
     # usually due to **kwargs usage or a mismatch in name
-    file_global_args = {"owner": "user",
-                        "path": "name",
-                        "dest": "name",
-                        "src": "target"
-                        }
+    file_global_args = {"owner": "user", "path": "name", "dest": "name", "src": "target"}
 
     file_state_args = {"directory": {"mode": "dir_mode"}}
 
@@ -65,7 +63,7 @@ def process(builtin_data, task):
     for _arg in file_global_args:
         if _arg in builtin_data:
             state_args.append({file_global_args[_arg]: builtin_data[_arg]})
-    
+
     if state in file_state_args:
         for _arg in file_state_args[state]:
             if _arg in builtin_data:
