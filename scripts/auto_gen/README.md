@@ -16,7 +16,7 @@ To get started auto generating a new module:
     ``present`` to be the first key and then Salt's equivalent state function
     to be the value. If the matching ansible module does not use a ``state``
     arg in the module, just add ``false`` as the key. For example the git
-    module does not have a ``state` key, and looks like the following:
+    module does not have a ``state`` key, and looks like the following:
 
     git:
       modules: {"salt": "salt.states.git", "ansible": "ansible.modules.git"}
