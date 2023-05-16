@@ -24,3 +24,11 @@ archive:
   modules: {"salt": "salt.states.archive", "ansible": "ansible.modules.unarchive"}
   functions: {"false": "archive.extracted"}
   manual_args: {"src": "source", "dest": "name", "extra_opts": "options", "validate_certs": "skip_verify"}
+cmd:
+  modules: {"salt": "salt.states.cmd", "ansible": "ansible.modules.command"}
+  functions: {"false": "cmd.run"}
+  manual_args: {"cmd": "name", "chdir": "cwd", "creates": "creates"}
+script:
+  modules: {"salt": "salt.states.cmd", "ansible": "ansible.modules.script"}
+  functions: {"false": "cmd.script"}
+  manual_args: {"creates": "creates", "chdir": "cwd", "cmd": "name"}

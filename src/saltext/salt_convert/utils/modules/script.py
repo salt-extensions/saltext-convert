@@ -8,7 +8,7 @@ Module for converting state file
 """
 import inspect
 
-import {salt_module}
+import salt.states.cmd
 import saltext.salt_convert.utils.inspect
 import saltext.salt_convert.utils.lookup as lookup_builtins
 
@@ -17,7 +17,7 @@ def _setup():
     """
     Return the builtins this module should support",
     """
-    return ["{other_name}"]
+    return ["script"]
 
 
 @lookup_builtins.lookup_decorator
@@ -29,28 +29,25 @@ def process(builtin_data, task):
     # state as an arg
     state = "false"
     state_args = []
-    {state_name}_states = {func_map}
+    script_states = {"false": "cmd.script"}
     # manually add the args that are not automatically inspected further down
     # usually due to **kwargs usage or a mismatch in name
-    match_args = {arg_map}
+    match_args = {"creates": "creates", "chdir": "cwd", "cmd": "name"}
 
-    {% if state %}
-    state = builtin_data.get("state")
-    if not state:
-        state = "present"
-    {% endif %}
-    _, _func = {state_name}_states[state].split(".")
+    _, _func = script_states[state].split(".")
     salt_args = saltext.salt_convert.utils.inspect.function_args(
-        {salt_module}, _func, builtin_data,
+        salt.states.cmd,
+        _func,
+        builtin_data,
     )
 
     for _arg in salt_args:
         if _arg in builtin_data:
-            state_args.append({{_arg: builtin_data[_arg]}})
+            state_args.append({_arg: builtin_data[_arg]})
 
     for _arg in match_args:
         if _arg in builtin_data:
-            state_args.append({{match_args[_arg]: builtin_data[_arg]}})
+            state_args.append({match_args[_arg]: builtin_data[_arg]})
 
-    state_contents = {{{state_name}_states[state]: state_args}}
+    state_contents = {script_states[state]: state_args}
     return state_contents
