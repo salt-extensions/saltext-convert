@@ -20,3 +20,7 @@ git:
   modules: {"salt": "salt.states.git", "ansible": "ansible.modules.git"}
   functions: {"false": "git.cloned"}
   manual_args: {"repo": "name", "dest": "target", "version": "branch"}
+archive:
+  modules: {"salt": "salt.states.archive", "ansible": "ansible.modules.unarchive"}
+  functions: {"false": "archive.extracted"}
+  manual_args: {"src": "source", "dest": "name", "extra_opts": "options", "validate_certs": "skip_verify"}
