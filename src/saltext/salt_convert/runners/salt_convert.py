@@ -54,7 +54,7 @@ def get_state_file_root(env="base"):
     return pathlib.Path(__opts__.get("file_roots").get(env)[0])
 
 
-def generate_files(state, sls_name="default", env="base"):
+def generate_files(state, sls_name="default", file_type="sls", env="base"):
     """
     Generate an sls file for the minion with given state contents
     """
@@ -69,7 +69,7 @@ def generate_files(state, sls_name="default", env="base"):
         )
         return False
 
-    minion_state_file = minion_state_root / f"{sls_name}.sls"
+    minion_state_file = minion_state_root / f"{sls_name}.{file_type}"
 
     with salt.utils.files.fopen(minion_state_file, "w") as fp_:
         fp_.write(state)
@@ -98,16 +98,20 @@ def files(path=None):
 
     state_contents = {}
     sls_files = []
-    _vars = {}
     for _file in _files:
         if not _file.is_file():
             log.error(f"File {_file} does not exist, skipping")
             continue
         with salt.utils.files.fopen(_file, "r") as fp_:
             json_data = yaml.safe_load(fp_.read())
+            playbook_path = pathlib.Path(_file).parent
+
+            # Proccess vars
             for block in json_data:
                 if "vars_files" in block:
-                    _vars = handle_vars(block["vars_files"])
+                    vars_data = handle_vars(block["vars_files"], playbook_path)
+                else:
+                    vars_data = {}
 
             for block in json_data:
                 if "tasks" in block:
@@ -117,23 +121,41 @@ def files(path=None):
                         for builtin in task:
                             builtin_func = mod_builtins.get(builtin)
                             if builtin_func:
-                                state_contents[task_name] = builtin_func(task[builtin], task)
+                                state_contents[task_name] = builtin_func(
+                                    task[builtin], task, vars_data
+                                )
                 else:
                     task_name = block.pop("name")
                     for builtin in block:
                         builtin_func = mod_builtins.get(builtin)
                         if builtin_func:
-                            state_contents[task_name] = builtin_func(block[builtin], block)
+                            state_contents[task_name] = builtin_func(
+                                block[builtin], block, vars_data
+                            )
+
             state_name = re.sub(".yml", "", f"{os.path.basename(_file)}")
             state_yaml = yaml.dump(state_contents)
+
+            include_yaml = ""
+            for include in vars_data:
+                include_yaml = (
+                    include_yaml
+                    + '{% import_yaml tpldir ~ "/'
+                    + include
+                    + '.yml" as '
+                    + include
+                    + " with context -%}\n\n"
+                )
+            state_yaml = include_yaml + state_yaml
+
             sls_files.append(generate_files(state=state_yaml, sls_name=state_name))
     return {"Converted playbooks to sls files": [str(x) for x in sls_files]}
 
 
-def handle_vars(path=None):
-
-    _vars = {}
+def handle_vars(path=None, parent_path=None):
+    include_vars = {}
     _files = []
+
     if not isinstance(path, list):
         _files = [path]
     else:
@@ -149,8 +171,22 @@ def handle_vars(path=None):
                     _files.remove(_file)
 
     for _file in _files:
-        with salt.utils.files.fopen(_file, "r") as fp_:
-            json_data = yaml.safe_load(fp_.read())
-            _vars.update(json_data)
+        if not str(_file).startswith(os.sep):
+            var_file = parent_path / _file
+        else:
+            var_file = _file
 
-    return _vars
+        var_include_name = re.sub(os.sep, "-", f"{os.path.basename(_file)}")
+        var_include_name = re.sub(".yml", "", var_include_name)
+
+        with salt.utils.files.fopen(var_file, "r") as fp_:
+            yaml_data = yaml.safe_load(fp_.read())
+            vars_yaml = yaml.dump(yaml_data)
+
+            vars_include_file = generate_files(
+                state=vars_yaml, sls_name=var_include_name, file_type="yml"
+            )
+
+            include_vars[var_include_name] = {"data": yaml_data, "file": str(vars_include_file)}
+
+    return include_vars

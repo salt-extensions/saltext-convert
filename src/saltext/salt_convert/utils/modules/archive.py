@@ -9,6 +9,7 @@ Module for converting state file
 import inspect
 
 import salt.states.archive
+import saltext.salt_convert.utils.helpers as helpers
 import saltext.salt_convert.utils.inspect
 import saltext.salt_convert.utils.lookup as lookup_builtins
 
@@ -21,7 +22,8 @@ def _setup():
 
 
 @lookup_builtins.lookup_decorator
-def process(builtin_data, task):
+@helpers.process_vars_decorator
+def process(builtin_data, task, vars_data):
     """
     Process tasks into Salt states
     """
