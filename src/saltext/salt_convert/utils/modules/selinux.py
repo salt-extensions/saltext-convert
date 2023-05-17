@@ -26,16 +26,14 @@ def process(builtin_data, task):
     if "persistent" in builtin_data:
         state_contents = {
             selinux_state: [
-                {
-                    "name": builtin_data["name"],
-                    "value": builtin_data["state"],
-                    "persist": builtin_data["persistent"],
-                }
+                {"name": builtin_data["name"]},
+                {"value": builtin_data["state"]},
+                {"persist": builtin_data["persistent"]},
             ]
         }
     else:
         state_contents = {
-            selinux_state: [{"name": builtin_data["name"], "value": builtin_data["state"]}]
+            selinux_state: [{"name": builtin_data["name"]}, {"value": builtin_data["state"]}]
         }
 
     return state_contents
