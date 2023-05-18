@@ -42,19 +42,23 @@ def process(builtin_data, task):
     match_args = {"cmd": "name", "chdir": "cwd"}
 
     _, _func = cmd_states[state].split(".")
-    salt_args = saltext.salt_convert.utils.inspect.function_args(
-        salt.states.cmd,
-        _func,
-        builtin_data,
-    )
+    if isinstance(builtin_data, dict):
+        salt_args = saltext.salt_convert.utils.inspect.function_args(
+            salt.states.cmd,
+            _func,
+            builtin_data,
+        )
 
-    for _arg in salt_args:
-        if _arg in builtin_data:
-            state_args.append({_arg: builtin_data[_arg]})
+        for _arg in salt_args:
+            if _arg in builtin_data:
+                state_args.append({_arg: builtin_data[_arg]})
 
-    for _arg in match_args:
-        if _arg in builtin_data:
-            state_args.append({match_args[_arg]: builtin_data[_arg]})
+        for _arg in match_args:
+            if _arg in builtin_data:
+                state_args.append({match_args[_arg]: builtin_data[_arg]})
 
-    state_contents = {cmd_states[state]: state_args}
+        state_contents = {cmd_states[state]: state_args}
+    else:
+        state_args = {"name": builtin_data}
+        state_contents = {cmd_states[state]: [state_args]}
     return state_contents

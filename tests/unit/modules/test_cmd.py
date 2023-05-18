@@ -14,7 +14,7 @@ def configure_loader_modules(tmp_path):
     }
 
 
-def test_cmd_playbook_to_sls(tmp_path):
+def test_cmd_playbook_to_sls_dict(tmp_path):
     """
     Test converting a cmd playbook to sls file
     """
@@ -26,6 +26,36 @@ def test_cmd_playbook_to_sls(tmp_path):
                     "tasks": [
                         {
                             "ansible.builtin.command": {"cmd": "/usr/bin/command"},
+                            "name": "Run command",
+                        }
+                    ],
+                    "hosts": "pocminion",
+                    "remote_user": "root",
+                    "name": "Test cmd module",
+                }
+            ],
+            fp_,
+        )
+
+    sls_file = salt_convert_runner.files(path=playbook)["Converted playbooks to sls files"][0]
+    with open(file=sls_file, encoding=locale.getpreferredencoding()) as fp_:
+        ret = yaml.safe_load(fp_)
+
+    assert ret == {"Run command": {"cmd.run": [{"name": "/usr/bin/command"}]}}
+
+
+def test_cmd_playbook_to_sls_string(tmp_path):
+    """
+    Test converting a cmd playbook to sls file
+    """
+    playbook = tmp_path / "cmd-playbook.yml"
+    with open(file=playbook, mode="w", encoding=locale.getpreferredencoding()) as fp_:
+        yaml.dump(
+            [
+                {
+                    "tasks": [
+                        {
+                            "ansible.builtin.command": "/usr/bin/command",
                             "name": "Run command",
                         }
                     ],
