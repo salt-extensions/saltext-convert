@@ -53,6 +53,7 @@ def test_full_example_with_vars():
     assert ret["func-tests-minion-opts"]["Disable default Apache site"] == {
         "cmd": [
             {"name": "/usr/sbin/a2dissite 000-default.conf"},
+            {"listen_in": [{"service": "apache2"}]},
             "run",
             {"order": 10001},
         ],
@@ -63,6 +64,7 @@ def test_full_example_with_vars():
     assert ret["func-tests-minion-opts"]["Enable new site"] == {
         "cmd": [
             {"name": "/usr/sbin/a2ensite your_domain.conf"},
+            {"listen_in": [{"service": "apache2"}]},
             "run",
             {"order": 10002},
         ],

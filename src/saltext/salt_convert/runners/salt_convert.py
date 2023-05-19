@@ -98,6 +98,7 @@ def files(path=None):
 
     state_contents = {}
     sls_files = []
+    notify_tasks = {}
     for _file in _files:
         if not _file.is_file():
             log.error(f"File {_file} does not exist, skipping")
@@ -124,6 +125,13 @@ def files(path=None):
                                 state_contents[task_name] = builtin_func(
                                     task[builtin], task, vars_data
                                 )
+                        if "notify" in task:
+                            if task["notify"] not in notify_tasks:
+                                notify_tasks[task["notify"]] = [
+                                    task_name,
+                                ]
+                            else:
+                                notify_tasks[task["notify"]].append(task_name)
                 else:
                     task_name = block.pop("name")
                     for builtin in block:
@@ -132,6 +140,59 @@ def files(path=None):
                             state_contents[task_name] = builtin_func(
                                 block[builtin], block, vars_data
                             )
+
+            for block in json_data:
+                if "handlers" in block:
+                    handlers = block["handlers"]
+                    handler_states = {}
+                    for handler in handlers:
+                        handler_name = handler.pop("name")
+                        has_listen = handler.pop("listen", False)
+                        for builtin in handler:
+                            builtin_func = mod_builtins.get(builtin)
+                            if builtin_func:
+                                state_contents[handler_name] = builtin_func(
+                                    handler[builtin], handler, vars_data
+                                )
+                                if has_listen:
+                                    handler_state_name = has_listen
+                                else:
+                                    handler_state_name = handler_name
+
+                                if handler_state_name not in handler_states:
+                                    handler_states[handler_state_name] = [
+                                        state_contents[handler_name]
+                                    ]
+                                else:
+                                    handler_states[handler_state_name].append(
+                                        state_contents[handler_name]
+                                    )
+
+                    for notify_task in notify_tasks:
+                        if notify_task in handler_states:
+                            for state_name in notify_tasks[notify_task]:
+                                if state_name in state_contents:
+                                    for req in handler_states[notify_task]:
+                                        state_func = next(iter(state_contents[state_name]))
+
+                                        notify_func = next(iter(req))
+                                        notify_mod = notify_func.split(".")[0]
+                                        notify_name = req[notify_func][0]["name"]
+
+                                        if not [
+                                            True
+                                            for state in state_contents[state_name][state_func]
+                                            if "listen_in" in state
+                                        ]:
+                                            state_contents[state_name][state_func].append(
+                                                {"listen_in": [{notify_mod: notify_name}]}
+                                            )
+                                        else:
+                                            for _state in state_contents[state_name][state_func]:
+                                                if "listen_in" in _state:
+                                                    _state["listen_in"].append(
+                                                        {notify_mod: notify_name}
+                                                    )
 
             state_name = re.sub(".yml", "", f"{os.path.basename(_file)}")
             state_yaml = yaml.dump(state_contents)

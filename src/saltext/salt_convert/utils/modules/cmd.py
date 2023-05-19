@@ -61,6 +61,6 @@ def process(builtin_data, task, vars_data):
 
         state_contents = {cmd_states[state]: state_args}
     else:
-        state_args = {"name": builtin_data}
-        state_contents = {cmd_states[state]: [state_args]}
+        state_args = [{"name": builtin_data}]
+        state_contents = {cmd_states[state]: state_args}
     return state_contents
