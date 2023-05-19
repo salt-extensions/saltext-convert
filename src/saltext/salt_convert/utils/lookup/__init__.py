@@ -30,12 +30,12 @@ def _setup_lookup_modules():
 
 
 def lookup_decorator(func):
-    def wrapper(builtin_data, task):
+    def wrapper(builtin_data, task, vars_data):
         lookup_builtins = _setup_lookup_modules()
         for item in task:
             if item in lookup_builtins:
                 lookup_data = task[item]
                 builtin_data = lookup_builtins[item](builtin_data, lookup_data)
-        return func(builtin_data, task)
+        return func(builtin_data, task, vars_data)
 
     return wrapper

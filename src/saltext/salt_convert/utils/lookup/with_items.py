@@ -6,13 +6,14 @@ Module for procssing with_items lookup
 .. versionadded:: 0.0.1
 
 """
+import re
 
 
 def _setup():
     """
     Return the builtins this module should support
     """
-    return ["with_items"]
+    return ["with_items", "loop"]
 
 
 def process(builtin_data, lookup_data):
