@@ -32,3 +32,8 @@ script:
   modules: {"salt": "salt.states.cmd", "ansible": "ansible.modules.script"}
   functions: {"false": "cmd.script"}
   manual_args: {"creates": "creates", "chdir": "cwd", "cmd": "name"}
+cron:
+  modules: {"salt": "salt.states.cron", "ansible": "ansible.modules.cron"}
+  functions: {"present": "cron.present", "absent": "cron.absent"}
+  setup_names: ["ansible.builtin.cron"]
+  manual_args: {"name": "comment", "day": "daymonth", "job": "name", "special_time": "special", "weekday": "dayweek"}
