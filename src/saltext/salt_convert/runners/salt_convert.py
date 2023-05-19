@@ -237,8 +237,7 @@ def handle_vars(path=None, parent_path=None):
         else:
             var_file = _file
 
-        var_include_name = re.sub(os.sep, "-", f"{os.path.basename(_file)}")
-        var_include_name = re.sub(".yml", "", var_include_name)
+        var_include_name = re.sub(".yml", "", f"{os.path.basename(_file)}")
 
         with salt.utils.files.fopen(var_file, "r") as fp_:
             yaml_data = yaml.safe_load(fp_.read())

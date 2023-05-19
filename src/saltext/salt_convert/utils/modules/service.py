@@ -33,7 +33,8 @@ def process(builtin_data, task, vars_data):
     if "enabled" in builtin_data:
         state_contents = {
             service_states[builtin_data["state"]]: [
-                {"name": builtin_data["name"], "enable": builtin_data["enabled"]}
+                {"name": builtin_data["name"]},
+                {"enable": builtin_data["enabled"]},
             ]
         }
     else:
