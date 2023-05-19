@@ -42,7 +42,9 @@ def test_selinux_playbook_to_sls(tmp_path):
     assert ret == {
         "Set httpd_can_network_connect": {
             "selinux.boolean": [
-                {"name": "httpd_can_network_connect", "persist": "true", "value": "true"}
+                {"name": "httpd_can_network_connect"},
+                {"value": "true"},
+                {"persist": "true"},
             ]
         }
     }
