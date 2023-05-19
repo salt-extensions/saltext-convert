@@ -1,6 +1,7 @@
 # saltext-convert
 
-Salt runner to convert other configuration management systems to Salt states
+Salt runner to convert other configuration management systems infrastructure as code
+files to Salt states. For example, converting ansible playbook files to Salt states.
 
 ## Quickstart
 
@@ -29,5 +30,5 @@ To get started with your new project:
     # Build the docs, serve, and view in your web browser:
     python -m nox -e docs && (cd docs/_build/html; python -m webbrowser localhost:8000; python -m http.server; cd -)
 
-    # Run the example function
-    salt-call --local salt-convert.example_function text="Happy Hacking!"
+    # Convert ansible playbooks in a given directory to SLS files
+    salt-run convert.files path=/srv/ansible/

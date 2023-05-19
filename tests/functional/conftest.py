@@ -138,3 +138,13 @@ def reset_loaders_state(loaders):
     finally:
         # Reset the loaders state
         loaders.reset_state()
+
+
+@pytest.fixture(scope="module")
+def modules(loaders):
+    return loaders.modules
+
+
+@pytest.fixture(scope="module")
+def states(loaders):
+    return loaders.states
