@@ -7,6 +7,11 @@ import pytest
 import saltext.salt_convert.runners.salt_convert as salt_convert_runner
 
 
+pytestmark = [
+    pytest.mark.skip_on_windows,
+]
+
+
 @pytest.fixture
 def configure_loader_modules(minion_opts):
     opts = minion_opts.copy()
