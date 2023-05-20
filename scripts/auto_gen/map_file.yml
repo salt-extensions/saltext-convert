@@ -32,3 +32,8 @@ script:
   modules: {"salt": "salt.states.cmd", "ansible": "ansible.modules.script"}
   functions: {"false": "cmd.script"}
   manual_args: {"creates": "creates", "chdir": "cwd", "cmd": "name"}
+pkgrepo:
+  modules: {"salt": "salt.states.pkgrepo", "ansible": "ansible.modules.apt_repository"}
+  functions: {"present": "pkgrepo.managed", "absent": "pkgrepo.absent"}
+  setup_names: ["ansible.builtin.apt_repository", "ansible.builtin.yum_repository", "yum_repository"]
+  manual_args: {"repo": "name", "filename": "file", "mirrorlist": "mirrorlist", "description": "humanname", "enabled": "enabled", "gpgkey": "gpgkey", "description": "humanname", "baseurl": "baseurl"}
