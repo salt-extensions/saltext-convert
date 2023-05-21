@@ -9,6 +9,7 @@ Module for converting state file
 import inspect
 
 import salt.states.pkgrepo
+import saltext.salt_convert.utils.helpers as helpers
 import saltext.salt_convert.utils.inspect
 import saltext.salt_convert.utils.lookup as lookup_builtins
 
