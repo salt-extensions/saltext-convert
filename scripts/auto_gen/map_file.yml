@@ -37,3 +37,8 @@ pkgrepo:
   functions: {"present": "pkgrepo.managed", "absent": "pkgrepo.absent"}
   setup_names: ["ansible.builtin.apt_repository", "ansible.builtin.yum_repository", "yum_repository"]
   manual_args: {"repo": "name", "filename": "file", "mirrorlist": "mirrorlist", "description": "humanname", "enabled": "enabled", "gpgkey": "gpgkey", "description": "humanname", "baseurl": "baseurl"}
+cron:
+  modules: {"salt": "salt.states.cron", "ansible": "ansible.modules.cron"}
+  functions: {"present": "cron.present", "absent": "cron.absent"}
+  setup_names: ["ansible.builtin.cron"]
+  manual_args: {"name": "comment", "day": "daymonth", "job": "name", "special_time": "special", "weekday": "dayweek"}
