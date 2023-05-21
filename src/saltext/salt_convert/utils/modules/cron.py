@@ -21,7 +21,7 @@ def _setup():
 
 
 @lookup_builtins.lookup_decorator
-def process(builtin_data, task):
+def process(builtin_data, task, vars_data):
     """
     Process tasks into Salt states
     """
