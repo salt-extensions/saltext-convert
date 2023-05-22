@@ -143,7 +143,6 @@ def files(path=None):
 
             state_name = re.sub(".yml", "", f"{os.path.basename(_file)}")
             state_yaml = yaml.dump(state_contents, Dumper=PrettyDumper, sort_keys=False)
-            breakpoint()
 
             include_yaml = ""
             for include in vars_data:
