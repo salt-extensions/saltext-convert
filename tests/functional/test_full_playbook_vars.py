@@ -16,7 +16,6 @@ pytestmark = [
 ]
 
 
-
 @pytest.fixture
 def configure_loader_modules(minion_opts):
     opts = minion_opts.copy()
