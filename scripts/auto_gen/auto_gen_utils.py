@@ -12,6 +12,7 @@ import importlib
 import inspect
 import logging
 import pathlib
+import sys
 
 import salt.utils.files  # pylint: disable=import-error
 import yaml
@@ -84,6 +85,11 @@ def gen_code(map_file=None, module=None, force=False):
                 other_name.append(name)
         salt_module = modules["salt"]
         import_salt_mod = importlib.import_module(salt_module)
+        # A little prep work since the module is in a collection
+        if "collections" in other_module:
+            collections_home = pathlib.Path.home() / ".ansible/collections"
+            sys.path.append(str(collections_home))
+            import_ansible_collections = importlib.import_module("ansible_collections")
         import_other_mod = importlib.import_module(other_module)
         non_match = []
         arg_map = {}
