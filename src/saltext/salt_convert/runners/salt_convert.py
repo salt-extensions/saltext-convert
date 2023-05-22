@@ -43,15 +43,17 @@ def _setup_modules():
     """
     mod_builtins = {}
     utils_path = pathlib.Path(__file__).parent.parent / "utils" / "modules"
-    for util_path in os.listdir(utils_path):
-        fname, ext = os.path.splitext(util_path)
-        if ext == ".py" and not fname.startswith("."):
-            mod_name = f"saltext.salt_convert.utils.modules.{fname}"
-            imported_mod = importlib.import_module(mod_name)
-            if hasattr(imported_mod, "_setup"):
-                mods = imported_mod._setup()
-                for _mod in mods:
-                    mod_builtins[_mod] = imported_mod.process
+    for util_type in os.listdir(utils_path):
+        utils_path = pathlib.Path(__file__).parent.parent / "utils" / "modules" / util_type
+        for util_path in os.listdir(utils_path):
+            fname, ext = os.path.splitext(util_path)
+            if ext == ".py" and not fname.startswith("."):
+                mod_name = f"saltext.salt_convert.utils.modules.{util_type}.{fname}"
+                imported_mod = importlib.import_module(mod_name)
+                if hasattr(imported_mod, "_setup"):
+                    mods = imported_mod._setup()
+                    for _mod in mods:
+                        mod_builtins[_mod] = imported_mod.process
     return mod_builtins
 
 
