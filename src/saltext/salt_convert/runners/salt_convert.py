@@ -22,6 +22,14 @@ __virtualname__ = "convert"
 log = logging.getLogger(__name__)
 
 
+class PrettyDumper(yaml.SafeDumper):
+    def write_line_break(self, data=None):
+        super().write_line_break(data)
+
+        if len(self.indents) == 1:
+            super().write_line_break()
+
+
 def __virtual__():
     """
     Virtual function
@@ -134,7 +142,8 @@ def files(path=None):
                             )
 
             state_name = re.sub(".yml", "", f"{os.path.basename(_file)}")
-            state_yaml = yaml.dump(state_contents)
+            state_yaml = yaml.dump(state_contents, Dumper=PrettyDumper, sort_keys=False)
+            breakpoint()
 
             include_yaml = ""
             for include in vars_data:
