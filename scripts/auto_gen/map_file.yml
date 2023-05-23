@@ -42,3 +42,8 @@ cron:
   functions: {"present": "cron.present", "absent": "cron.absent"}
   setup_names: ["ansible.builtin.cron"]
   manual_args: {"name": "comment", "day": "daymonth", "job": "name", "special_time": "special", "weekday": "dayweek"}
+docker_container:
+  modules: {"salt": "salt.states.docker_container", "ansible": "ansible_collections.community.docker.plugins.modules.docker_container"}
+  functions: {"present": "docker_container.running", "absent": "docker_container.absent"}
+  setup_names: ["ansible.builtin.docker_container"]
+  manual_args: {}
