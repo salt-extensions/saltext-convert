@@ -42,6 +42,16 @@ cron:
   functions: {"present": "cron.present", "absent": "cron.absent"}
   setup_names: ["ansible.builtin.cron"]
   manual_args: {"name": "comment", "day": "daymonth", "job": "name", "special_time": "special", "weekday": "dayweek"}
+mysql_user:
+  modules: {"salt": "salt.states.mysql_user", "ansible": "ansible_collections.community.mysql.plugins.modules.mysql_user"}
+  functions: {"present": "mysql_user.present", "absent": "mysql_user.absent"}
+  setup_names: ["ansible.community.mysql"]
+  manual_args: {}
+mysql_db:
+  modules: {"salt": "salt.states.mysql_database", "ansible": "ansible_collections.community.mysql.plugins.modules.mysql_db"}
+  functions: {"present": "mysql_db.present", "absent": "mysql_db.absent"}
+  setup_names: ["ansible.community.mysql"]
+  manual_args: {}
 docker_container:
   modules: {"salt": "salt.states.docker_container", "ansible": "ansible_collections.community.docker.plugins.modules.docker_container"}
   functions: {"present": "docker_container.running", "absent": "docker_container.absent"}
