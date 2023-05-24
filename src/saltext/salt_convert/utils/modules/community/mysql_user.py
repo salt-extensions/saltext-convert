@@ -18,7 +18,7 @@ def _setup():
     """
     Return the builtins this module should support",
     """
-    return ["mysql_user", "ansible.community.mysql"]
+    return ["mysql_user", "community.mysql.mysql_user"]
 
 
 @lookup_builtins.lookup_decorator
