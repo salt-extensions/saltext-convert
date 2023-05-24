@@ -57,3 +57,8 @@ docker_container:
   functions: {"present": "docker_container.running", "absent": "docker_container.absent"}
   setup_names: ["ansible.builtin.docker_container"]
   manual_args: {}
+docker_image:
+  modules: {"salt": "salt.states.docker_image", "ansible": "ansible_collections.community.docker.plugins.modules.docker_image"}
+  functions: {"present": "docker_image.present", "absent": "docker_image.absent"}
+  setup_names: ["ansible.builtin.docker_image"]
+  manual_args: {}
