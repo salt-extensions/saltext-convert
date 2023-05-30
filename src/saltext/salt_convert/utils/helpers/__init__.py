@@ -17,7 +17,10 @@ def process_vars_decorator(func):
                 for context in vars_data:
                     loaded_vars = vars_data[context]["data"]
                     for loaded_var in loaded_vars:
-                        if f"{{ {loaded_var} }}" in builtin_data[item]:
+                        if (
+                            isinstance(builtin_data[item], str)
+                            and f"{{ {loaded_var} }}" in builtin_data[item]
+                        ):
                             updated_var = f'{context}["{loaded_var}"]'
                             builtin_data[item] = re.sub(loaded_var, updated_var, builtin_data[item])
         elif isinstance(builtin_data, str):

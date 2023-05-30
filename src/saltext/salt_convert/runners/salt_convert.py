@@ -22,6 +22,14 @@ __virtualname__ = "convert"
 log = logging.getLogger(__name__)
 
 
+class PrettyDumper(yaml.SafeDumper):
+    def write_line_break(self, data=None):
+        super().write_line_break(data)
+
+        if len(self.indents) == 1:
+            super().write_line_break()
+
+
 def __virtual__():
     """
     Virtual function
@@ -35,15 +43,17 @@ def _setup_modules():
     """
     mod_builtins = {}
     utils_path = pathlib.Path(__file__).parent.parent / "utils" / "modules"
-    for util_path in os.listdir(utils_path):
-        fname, ext = os.path.splitext(util_path)
-        if ext == ".py" and not fname.startswith("."):
-            mod_name = f"saltext.salt_convert.utils.modules.{fname}"
-            imported_mod = importlib.import_module(mod_name)
-            if hasattr(imported_mod, "_setup"):
-                mods = imported_mod._setup()
-                for _mod in mods:
-                    mod_builtins[_mod] = imported_mod.process
+    for util_type in os.listdir(utils_path):
+        utils_path = pathlib.Path(__file__).parent.parent / "utils" / "modules" / util_type
+        for util_path in os.listdir(utils_path):
+            fname, ext = os.path.splitext(util_path)
+            if ext == ".py" and not fname.startswith("."):
+                mod_name = f"saltext.salt_convert.utils.modules.{util_type}.{fname}"
+                imported_mod = importlib.import_module(mod_name)
+                if hasattr(imported_mod, "_setup"):
+                    mods = imported_mod._setup()
+                    for _mod in mods:
+                        mod_builtins[_mod] = imported_mod.process
     return mod_builtins
 
 
@@ -195,7 +205,7 @@ def files(path=None):
                                                     )
 
             state_name = re.sub(".yml", "", f"{os.path.basename(_file)}")
-            state_yaml = yaml.dump(state_contents)
+            state_yaml = yaml.dump(state_contents, Dumper=PrettyDumper, sort_keys=False)
 
             include_yaml = ""
             for include in vars_data:

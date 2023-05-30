@@ -12,6 +12,7 @@ import importlib
 import inspect
 import logging
 import pathlib
+import sys
 
 import salt.utils.files  # pylint: disable=import-error
 import yaml
@@ -27,12 +28,14 @@ def _render_jinja(template_path=None, context=None):
     Render the jinja logic in utils_code.py.template
     """
     environment = Environment(
-        variable_start_string="<{",
+        block_start_string="{%",
+        block_end_string="%}",
+        variable_start_string="{<",
         variable_end_string=">}",
         loader=FileSystemLoader(template_path.parent),
     )
     template = environment.get_template(template_path.name)
-    content = template.render({"state": False})
+    content = template.render(context)
     return content
 
 
@@ -72,11 +75,21 @@ def gen_code(map_file=None, module=None, force=False):
         modules = data[state_name]["modules"]
         functions = data[state_name]["functions"]
         manual_args = data[state_name].get("manual_args")
+        setup_names = data[state_name].get("setup_names")
 
         other_module = modules[[x for x in modules.keys() if x != "salt"][0]]
-        other_name = other_module.split(".")[-1]
+        other_name = []
+        other_name.append(other_module.split(".")[-1])
+        if setup_names:
+            for name in setup_names:
+                other_name.append(name)
         salt_module = modules["salt"]
         import_salt_mod = importlib.import_module(salt_module)
+        # A little prep work since the module is in a collection
+        if "collections" in other_module:
+            collections_home = pathlib.Path.home() / ".ansible/collections"
+            sys.path.append(str(collections_home))
+            import_ansible_collections = importlib.import_module("ansible_collections")
         import_other_mod = importlib.import_module(other_module)
         non_match = []
         arg_map = {}
@@ -104,7 +117,7 @@ def gen_code(map_file=None, module=None, force=False):
         content = _render_jinja(template, context=context)
         # Render string formatting
         content = content.format(
-            other_name=other_name,
+            other_name='", "'.join(other_name),
             salt_module=salt_module,
             func_map=func_map,
             arg_map=arg_map,

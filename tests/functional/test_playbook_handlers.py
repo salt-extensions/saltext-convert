@@ -43,22 +43,12 @@ def test_full_example_with_vars():
         f"ansible_convert.{pathlib.Path(sls_file).name.split('.')[0]}"
     )
 
-    assert ret["func-tests-minion-opts"]["Restart apache"] == {
-        "service": [
-            {"name": "apache"},
-            "running",
-            {"order": 10000},
-        ],
-        "__sls__": "ansible_convert.playbook-with-handlers",
-        "__env__": "base",
-    }
-
     assert ret["func-tests-minion-opts"]["Restart everything"] == {
         "cmd": [
             {"name": 'echo "this task will restart the web services"'},
             {"listen_in": [{"service": "memcached"}, {"service": "apache"}]},
             "run",
-            {"order": 10001},
+            {"order": 10000},
         ],
         "__sls__": "ansible_convert.playbook-with-handlers",
         "__env__": "base",
@@ -67,6 +57,16 @@ def test_full_example_with_vars():
     assert ret["func-tests-minion-opts"]["Restart memcached"] == {
         "service": [
             {"name": "memcached"},
+            "running",
+            {"order": 10001},
+        ],
+        "__sls__": "ansible_convert.playbook-with-handlers",
+        "__env__": "base",
+    }
+
+    assert ret["func-tests-minion-opts"]["Restart apache"] == {
+        "service": [
+            {"name": "apache"},
             "running",
             {"order": 10002},
         ],

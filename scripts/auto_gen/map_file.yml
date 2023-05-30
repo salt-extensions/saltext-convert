@@ -32,3 +32,33 @@ script:
   modules: {"salt": "salt.states.cmd", "ansible": "ansible.modules.script"}
   functions: {"false": "cmd.script"}
   manual_args: {"creates": "creates", "chdir": "cwd", "cmd": "name"}
+pkgrepo:
+  modules: {"salt": "salt.states.pkgrepo", "ansible": "ansible.modules.apt_repository"}
+  functions: {"present": "pkgrepo.managed", "absent": "pkgrepo.absent"}
+  setup_names: ["ansible.builtin.apt_repository", "ansible.builtin.yum_repository", "yum_repository"]
+  manual_args: {"repo": "name", "filename": "file", "mirrorlist": "mirrorlist", "description": "humanname", "enabled": "enabled", "gpgkey": "gpgkey", "description": "humanname", "baseurl": "baseurl"}
+cron:
+  modules: {"salt": "salt.states.cron", "ansible": "ansible.modules.cron"}
+  functions: {"present": "cron.present", "absent": "cron.absent"}
+  setup_names: ["ansible.builtin.cron"]
+  manual_args: {"name": "comment", "day": "daymonth", "job": "name", "special_time": "special", "weekday": "dayweek"}
+mysql_user:
+  modules: {"salt": "salt.states.mysql_user", "ansible": "ansible_collections.community.mysql.plugins.modules.mysql_user"}
+  functions: {"present": "mysql_user.present", "absent": "mysql_user.absent"}
+  setup_names: ["ansible.community.mysql"]
+  manual_args: {}
+mysql_db:
+  modules: {"salt": "salt.states.mysql_database", "ansible": "ansible_collections.community.mysql.plugins.modules.mysql_db"}
+  functions: {"present": "mysql_db.present", "absent": "mysql_db.absent"}
+  setup_names: ["ansible.community.mysql"]
+  manual_args: {}
+docker_container:
+  modules: {"salt": "salt.states.docker_container", "ansible": "ansible_collections.community.docker.plugins.modules.docker_container"}
+  functions: {"present": "docker_container.running", "absent": "docker_container.absent"}
+  setup_names: ["ansible.builtin.docker_container"]
+  manual_args: {}
+docker_image:
+  modules: {"salt": "salt.states.docker_image", "ansible": "ansible_collections.community.docker.plugins.modules.docker_image"}
+  functions: {"present": "docker_image.present", "absent": "docker_image.absent"}
+  setup_names: ["ansible.builtin.docker_image"]
+  manual_args: {}

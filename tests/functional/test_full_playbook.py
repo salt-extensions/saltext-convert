@@ -32,18 +32,6 @@ def test_full_example(modules):
     sls_file = salt_convert_runner.files(path=str(path))["Converted playbooks to sls files"][0]
     ret = modules.state.show_sls(f"ansible_convert.{pathlib.Path(sls_file).name.strip('.sls')}")
 
-    assert ret["Configure SELinux"] == {
-        "selinux": [
-            {"name": "httpd_can_network_connect_db"},
-            {"value": True},
-            {"persist": True},
-            "boolean",
-            {"order": 10000},
-        ],
-        "__sls__": "ansible_convert.full-playbook-example",
-        "__env__": "base",
-    }
-
     assert ret["Install packages"] == {
         "pkg": [
             {
@@ -57,13 +45,26 @@ def test_full_example(modules):
                 ]
             },
             "installed",
-            {"order": 10001},
+            {"order": 10000},
         ],
         "__sls__": "ansible_convert.full-playbook-example",
         "__env__": "base",
     }
+
     assert ret["http service"] == {
-        "service": [{"name": "httpd"}, {"enable": True}, "running", {"order": 10002}],
+        "service": [{"name": "httpd"}, {"enable": True}, "running", {"order": 10001}],
+        "__sls__": "ansible_convert.full-playbook-example",
+        "__env__": "base",
+    }
+
+    assert ret["Configure SELinux"] == {
+        "selinux": [
+            {"name": "httpd_can_network_connect_db"},
+            {"value": True},
+            {"persist": True},
+            "boolean",
+            {"order": 10002},
+        ],
         "__sls__": "ansible_convert.full-playbook-example",
         "__env__": "base",
     }
