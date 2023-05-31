@@ -23,7 +23,12 @@ def process(builtin_data, task, vars_data):
     """
     Process tasks into Salt states
     """
-    service_states = {"started": "service.running", "stopped": "service.dead"}
+    service_states = {
+        "started": "service.running",
+        "stopped": "service.dead",
+        "restarted": "service.running",
+        "reloaded": "service.running",
+    }
 
     if "enabled" in builtin_data:
         state_contents = {

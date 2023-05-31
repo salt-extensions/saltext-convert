@@ -88,6 +88,7 @@ def test_full_example_with_vars():
         "file": [
             {"name": "/etc/apache2/sites-available/your_domain.conf"},
             {"source": "files/apache.conf.j2"},
+            {"listen_in": [{"service": "apache2"}]},
             "managed",
             {"order": 10003},
         ],
@@ -98,6 +99,7 @@ def test_full_example_with_vars():
     assert ret["func-tests-minion-opts"]["Enable new site"] == {
         "cmd": [
             {"name": "/usr/sbin/a2ensite your_domain.conf"},
+            {"listen_in": [{"service": "apache2"}]},
             "run",
             {"order": 10004},
         ],
@@ -108,6 +110,7 @@ def test_full_example_with_vars():
     assert ret["func-tests-minion-opts"]["Disable default Apache site"] == {
         "cmd": [
             {"name": "/usr/sbin/a2dissite 000-default.conf"},
+            {"listen_in": [{"service": "apache2"}]},
             "run",
             {"order": 10005},
         ],
@@ -156,6 +159,26 @@ def test_full_example_with_vars():
             {"source": "files/info.php.j2"},
             "managed",
             {"order": 10009},
+        ],
+        "__sls__": "ansible_convert.full-playbook-example-with-vars",
+        "__env__": "base",
+    }
+
+    assert ret["func-tests-minion-opts"]["Reload Apache"] == {
+        "service": [
+            {"name": "apache2"},
+            "running",
+            {"order": 10010},
+        ],
+        "__sls__": "ansible_convert.full-playbook-example-with-vars",
+        "__env__": "base",
+    }
+
+    assert ret["func-tests-minion-opts"]["Restart Apache"] == {
+        "service": [
+            {"name": "apache2"},
+            "running",
+            {"order": 10011},
         ],
         "__sls__": "ansible_convert.full-playbook-example-with-vars",
         "__env__": "base",
