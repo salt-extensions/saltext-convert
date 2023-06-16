@@ -74,8 +74,9 @@ def process(builtin_data, task, vars_data=None):
             if _arg in builtin_data:
                 data_arg = builtin_data[_arg]
                 if _arg == "mode":
-                    # Ensure mode is octal
-                    data_arg = oct(data_arg)
+                    # Ensure mode is octal if int
+                    if isinstance(data_arg, int):
+                        data_arg = oct(data_arg)
                 state_args.append({file_state_args[state][_arg]: data_arg})
 
     state_contents = {file_states[state]: state_args}
