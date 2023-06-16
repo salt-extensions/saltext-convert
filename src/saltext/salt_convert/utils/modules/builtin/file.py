@@ -39,6 +39,7 @@ def process(builtin_data, task, vars_data=None):
         "hard": "file.hardlink",
         "link": "file.symlink",
         "touch": "file.touch",
+        "absent": "file.absent",
     }
 
     # manually add the args that are not automatically inspected further down
@@ -71,7 +72,11 @@ def process(builtin_data, task, vars_data=None):
     if state in file_state_args:
         for _arg in file_state_args[state]:
             if _arg in builtin_data:
-                state_args.append({file_state_args[state][_arg]: builtin_data[_arg]})
+                data_arg = builtin_data[_arg]
+                if _arg == "mode":
+                    # Ensure mode is octal
+                    data_arg = oct(data_arg)
+                state_args.append({file_state_args[state][_arg]: data_arg})
 
     state_contents = {file_states[state]: state_args}
     return state_contents

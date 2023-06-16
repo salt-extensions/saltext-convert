@@ -264,3 +264,44 @@ def test_file_playbook_to_sls_touch(tmp_path):
         ret = yaml.safe_load(fp_)
 
     assert ret == {"manage a file": {"file.managed": [{"mode": "0755"}, {"name": "/etc/foo.conf"}]}}
+
+
+def test_file_playbook_to_sls_absent(tmp_path):
+    """
+    Test converting a file playbook
+    to sls file for file.absent
+    """
+    playbook = tmp_path / "file-playbook.yml"
+
+    with open(file=playbook, mode="w", encoding=locale.getpreferredencoding()) as fp_:
+        yaml.dump(
+            [
+                {
+                    "tasks": [
+                        {
+                            "name": "Delete a file",
+                            "file": {
+                                "state": "absent",
+                                "path": "/etc/some_file",
+                            },
+                        },
+                    ],
+                    "hosts": "fileservers",
+                    "remote_user": "root",
+                    "name": "manage files",
+                }
+            ],
+            fp_,
+        )
+
+    sls_file = salt_convert_runner.files(path=playbook)["Converted playbooks to sls files"][0]
+    with open(file=sls_file, encoding=locale.getpreferredencoding()) as fp_:
+        ret = yaml.safe_load(fp_)
+
+    assert ret == {
+        "Delete a file": {
+            "file.absent": [
+                {"name": "/etc/some_file"},
+            ]
+        }
+    }
