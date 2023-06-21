@@ -1,0 +1,9 @@
+- name: create directory
+  file:
+   path: "{{ item }}"
+   state: directory
+   recurse: yes
+   mode: 0775
+  with_items:
+    - /tmp/path1
+    - /tmp/path2

@@ -16,7 +16,7 @@ def _setup():
     return ["with_random_choice"]
 
 
-def process(builtin_data, lookup_data):
+def process(builtin_data, lookup_data, task=None):
     """
     Handle lookup builtin items
     """

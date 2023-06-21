@@ -63,7 +63,16 @@ def process(builtin_data, task, vars_data=None):
 
     for _arg in salt_args:
         if _arg in builtin_data:
-            state_args.append({_arg: builtin_data[_arg]})
+            if _arg == "recurse" and state == "directory":
+                # The recurse argument in file.directory
+                # only accepts user,group or mode.
+                recurse_list = []
+                for recurse_arg in ["user", "group", "mode"]:
+                    if builtin_data.get(recurse_arg):
+                        recurse_list.append(recurse_arg)
+                state_args.append({_arg: recurse_list})
+            else:
+                state_args.append({_arg: builtin_data[_arg]})
 
     for _arg in file_global_args:
         if _arg in builtin_data:

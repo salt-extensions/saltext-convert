@@ -147,9 +147,15 @@ def files(path=None):
                     for builtin in block:
                         builtin_func = mod_builtins.get(builtin)
                         if builtin_func:
-                            state_contents[task_name] = builtin_func(
-                                block[builtin], block, vars_data
-                            )
+                            data = builtin_func(block[builtin], block, vars_data)
+                            if isinstance(data, list):
+                                count = 0
+                                for state in data:
+                                    state_name = task_name + str(count)
+                                    state_contents[state_name] = state
+                                    count += 1
+                            else:
+                                state_contents[task_name] = data
 
             for block in json_data:
                 if "handlers" in block:
