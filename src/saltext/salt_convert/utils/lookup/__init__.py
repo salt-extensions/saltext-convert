@@ -35,7 +35,13 @@ def lookup_decorator(func):
         for item in task:
             if item in lookup_builtins:
                 lookup_data = task[item]
-                builtin_data = lookup_builtins[item](builtin_data, lookup_data)
-        return func(builtin_data, task, vars_data)
+                builtin_data = lookup_builtins[item](builtin_data, lookup_data, task=task)
+        if isinstance(builtin_data, list):
+            state_data = []
+            for state in builtin_data:
+                state_data.append(func(state, task, vars_data))
+            return state_data
+        else:
+            return func(builtin_data, task, vars_data)
 
     return wrapper
