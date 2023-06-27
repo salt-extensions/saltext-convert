@@ -1,0 +1,15 @@
+---
+- shell: cat /tmp/ebs.properties | grep -w EBS_DB_SID | cut -d '=' -f2
+  register: EBS_DB_SID
+
+- shell: cat /tmp/ebs.properties | grep -w EBS_DB_PORT | cut -d '=' -f2
+  register: EBS_DB_PORT
+
+- shell: cat /tmp/ebs.properties | grep -w EBS_DB_APPS_PASS | cut -d '=' -f2
+  register: EBS_DB_APPS_PASS
+
+- shell: cat /tmp/ebs.properties | grep -w EBS_APP_NODE_ID | cut -d '=' -f2
+  register: EBS_APP_NODE_ID
+
+- shell: cat /tmp/ebs.properties | grep -w EBS_APP_SERVER_ID | cut -d '=' -f2
+  register: EBS_APP_SERVER_ID
