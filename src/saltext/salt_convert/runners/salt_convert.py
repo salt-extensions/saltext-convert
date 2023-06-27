@@ -143,10 +143,12 @@ def files(path=None):
                             else:
                                 notify_tasks[task["notify"]].append(task_name)
                 else:
-                    task_name = block.pop("name")
+                    task_name = block.pop("name", None)
                     for builtin in block:
                         builtin_func = mod_builtins.get(builtin)
                         if builtin_func:
+                            if not task_name:
+                                task_name = block[builtin]
                             data = builtin_func(block[builtin], block, vars_data)
                             if isinstance(data, list):
                                 count = 0
