@@ -3,9 +3,9 @@ testing lookup random choice
 """
 import locale
 
-import pytest
+import pytest  # pylint: disable=3rd-party-module-not-gated
 import saltext.salt_convert.runners.salt_convert as salt_convert_runner
-import yaml
+import yaml  # pylint: disable=3rd-party-module-not-gated
 
 
 @pytest.fixture
@@ -26,7 +26,9 @@ def test_lookup_with_random_choice(tmp_path):
     """
     playbook = tmp_path / "playbook.yml"
 
-    with open(file=playbook, mode="w", encoding=locale.getpreferredencoding()) as _fd:
+    with open(
+        file=playbook, mode="w", encoding=locale.getpreferredencoding()
+    ) as _fd:  # pylint: disable=resource-leakage
         yaml.dump(
             [
                 {
@@ -46,7 +48,9 @@ def test_lookup_with_random_choice(tmp_path):
         )
 
     sls_file = salt_convert_runner.files(path=playbook)["Converted playbooks to sls files"][0]
-    with open(file=sls_file, encoding=locale.getpreferredencoding()) as _fd:
+    with open(
+        file=sls_file, encoding=locale.getpreferredencoding()
+    ) as _fd:  # pylint: disable=resource-leakage
         ret = yaml.safe_load(_fd)
 
     assert ret == {

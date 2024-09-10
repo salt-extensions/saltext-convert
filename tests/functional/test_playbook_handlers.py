@@ -3,8 +3,8 @@
 # pylint: disable=import-error
 import pathlib
 
-import pytest
-import salt.runners.state as state_mod_runner
+import pytest  # pylint: disable=3rd-party-module-not-gated
+import salt.runners.state as state_mod_runner  # pylint: disable=3rd-party-module-not-gated
 import saltext.salt_convert.runners.salt_convert as salt_convert_runner
 
 # pylint: enable=import-error
@@ -36,7 +36,9 @@ def test_full_example_with_vars():
     """
     path = pathlib.Path(__file__).parent / "files" / "playbook-with-handlers.yml"
 
-    sls_file = salt_convert_runner.files(path=str(path))["Converted playbooks to sls files"][0]
+    sls_file = salt_convert_runner.ansible_files(path=str(path))[
+        "Converted playbooks to sls files"
+    ][0]
 
     ret = state_mod_runner.orchestrate_show_sls(
         f"ansible_convert.{pathlib.Path(sls_file).name.split('.')[0]}"

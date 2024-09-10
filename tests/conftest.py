@@ -1,8 +1,8 @@
 import os
 
-import pytest
+import pytest  # pylint: disable=3rd-party-module-not-gated
 from saltext.salt_convert import PACKAGE_ROOT
-from saltfactories.utils import random_string
+from saltfactories.utils import random_string  # pylint: disable=3rd-party-module-not-gated
 
 
 @pytest.fixture(scope="session")

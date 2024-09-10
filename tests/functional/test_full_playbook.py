@@ -2,7 +2,7 @@
 #
 import pathlib
 
-import pytest
+import pytest  # pylint: disable=3rd-party-module-not-gated
 import saltext.salt_convert.runners.salt_convert as salt_convert_runner
 
 
@@ -28,7 +28,9 @@ def test_full_example(modules):
     and ensure salt can call it
     """
     path = pathlib.Path(__file__).parent / "files" / "full-playbook-example.yml"
-    sls_file = salt_convert_runner.files(path=str(path))["Converted playbooks to sls files"][0]
+    sls_file = salt_convert_runner.ansible_files(path=str(path))[
+        "Converted playbooks to sls files"
+    ][0]
     ret = modules.state.show_sls(f"ansible_convert.{pathlib.Path(sls_file).name.strip('.sls')}")
 
     assert ret["Install packages"] == {

@@ -19,8 +19,11 @@ persistent=yes
 
 # List of plugins (as comma separated values of python modules names) to load,
 # usually to register additional checkers.
-load-plugins=saltpylint.pep8,
-  saltpylint.strings
+load-plugins=saltpylint.fileperms,
+  saltpylint.smartup,
+  saltpylint.blacklist,
+  saltpylint.thirdparty,
+  saltpylint.dunder_del
 
 # Use multiple processes to speed up Pylint.
 jobs=1
@@ -57,14 +60,11 @@ confidence=
 #disable=
 disable=R,
   I0011,
-  I0012,
   I0013,
   C0330,
-  E8116,
-  E812,
   wrong-import-position,
   wrong-import-order,
-  un-indexed-curly-braces-error
+  resource-leakage,
 
 # Disabled:
 # R* [refactoring suggestions & reports]

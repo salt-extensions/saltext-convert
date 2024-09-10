@@ -2,4 +2,4 @@
 nox==2021.6.12
 pre-commit==2.13.0
 pylint
-SaltPyLint
+saltpylint==2024.2.5
