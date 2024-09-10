@@ -8,22 +8,17 @@ Module for converting state file
 """
 import inspect
 
-import salt.states.pkgrepo
-import saltext.salt_convert.utils.helpers as helpers
+import salt.states.git
+import saltext.salt_convert.utils.ansible.helpers as helpers
+import saltext.salt_convert.utils.ansible.lookup as lookup_builtins
 import saltext.salt_convert.utils.inspect
-import saltext.salt_convert.utils.lookup as lookup_builtins
 
 
 def _setup():
     """
     Return the builtins this module should support",
     """
-    return [
-        "apt_repository",
-        "ansible.builtin.apt_repository",
-        "ansible.builtin.yum_repository",
-        "yum_repository",
-    ]
+    return ["git"]
 
 
 @lookup_builtins.lookup_decorator
@@ -36,26 +31,14 @@ def process(builtin_data, task, vars_data):
     # state as an arg
     state = "false"
     state_args = []
-    pkgrepo_states = {"present": "pkgrepo.managed", "absent": "pkgrepo.absent"}
+    git_states = {"false": "git.cloned"}
     # manually add the args that are not automatically inspected further down
     # usually due to **kwargs usage or a mismatch in name
-    match_args = {
-        "repo": "name",
-        "filename": "file",
-        "mirrorlist": "mirrorlist",
-        "description": "humanname",
-        "enabled": "enabled",
-        "gpgkey": "gpgkey",
-        "baseurl": "baseurl",
-    }
+    match_args = {"repo": "name", "dest": "target", "version": "branch"}
 
-    state = builtin_data.get("state")
-    if not state:
-        state = "present"
-
-    _, _func = pkgrepo_states[state].split(".")
+    _, _func = git_states[state].split(".")
     salt_args = saltext.salt_convert.utils.inspect.function_args(
-        salt.states.pkgrepo,
+        salt.states.git,
         _func,
         builtin_data,
     )
@@ -68,5 +51,5 @@ def process(builtin_data, task, vars_data):
         if _arg in builtin_data:
             state_args.append({match_args[_arg]: builtin_data[_arg]})
 
-    state_contents = {pkgrepo_states[state]: state_args}
+    state_contents = {git_states[state]: state_args}
     return state_contents

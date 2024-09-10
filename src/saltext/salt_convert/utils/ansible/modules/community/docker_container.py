@@ -8,22 +8,29 @@ Module for converting state file
 """
 import inspect
 
-import salt.states.mysql_database
-import saltext.salt_convert.utils.helpers as helpers
+try:
+    import salt.states.docker_container
+
+    DOCKER_STATE_AVAILABLE = True
+except ImportError:
+    DOCKER_STATE_AVAILABLE = False
+
 import saltext.salt_convert.utils.inspect
-import saltext.salt_convert.utils.lookup as lookup_builtins
+import saltext.salt_convert.utils.ansible.lookup as lookup_builtins
 
 
 def _setup():
     """
     Return the builtins this module should support",
     """
-    return ["mysql_db", "community.mysql.mysql_db"]
+    if DOCKER_STATE_AVAILABLE:
+        return ["docker_container", "community.docker.docker_container"]
+    else:
+        return []
 
 
 @lookup_builtins.lookup_decorator
-@helpers.process_vars_decorator
-def process(builtin_data, task, var_data=None):
+def process(builtin_data, task, vars_data):
     """
     Process tasks into Salt states
     """
@@ -31,22 +38,21 @@ def process(builtin_data, task, var_data=None):
     # state as an arg
     state = "false"
     state_args = []
-    mysql_db_states = {"present": "mysql_db.present", "absent": "mysql_db.absent"}
+    docker_container_states = {
+        "present": "docker_container.running",
+        "absent": "docker_container.absent",
+    }
     # manually add the args that are not automatically inspected further down
     # usually due to **kwargs usage or a mismatch in name
-    match_args = {
-        "name": "name",
-        "login_user": "connection_user",
-        "login_password": "connection_pass",
-    }
+    match_args = {"image": "image", "name": "name", "networks": "networks"}
 
     state = builtin_data.get("state")
     if not state:
         state = "present"
 
-    _, _func = mysql_db_states[state].split(".")
+    _, _func = docker_container_states[state].split(".")
     salt_args = saltext.salt_convert.utils.inspect.function_args(
-        salt.states.mysql_database,
+        salt.states.docker_container,
         _func,
         builtin_data,
     )
@@ -61,5 +67,5 @@ def process(builtin_data, task, var_data=None):
             if not [x for x in state_args if _arg in x]:
                 state_args.append({match_args[_arg]: builtin_data[_arg]})
 
-    state_contents = {mysql_db_states[state]: state_args}
+    state_contents = {docker_container_states[state]: state_args}
     return state_contents

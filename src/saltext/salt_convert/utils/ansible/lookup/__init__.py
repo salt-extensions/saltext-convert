@@ -20,7 +20,7 @@ def _setup_lookup_modules():
     for util_path in os.listdir(utils_path):
         fname, ext = os.path.splitext(util_path)
         if ext == ".py" and not fname.startswith("."):
-            mod_name = f"saltext.salt_convert.utils.lookup.{fname}"
+            mod_name = f"saltext.salt_convert.utils.ansible.lookup.{fname}"
             imported_mod = importlib.import_module(mod_name)
             if hasattr(imported_mod, "_setup"):
                 mods = imported_mod._setup()

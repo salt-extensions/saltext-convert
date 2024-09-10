@@ -6,8 +6,8 @@ Module for converting state file
 .. versionadded:: 0.0.1
 
 """
-import saltext.salt_convert.utils.helpers as helpers
-import saltext.salt_convert.utils.lookup as lookup_builtins
+import saltext.salt_convert.utils.ansible.helpers as helpers
+import saltext.salt_convert.utils.ansible.lookup as lookup_builtins
 
 
 def _setup():

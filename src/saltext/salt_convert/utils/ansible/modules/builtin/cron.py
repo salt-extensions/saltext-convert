@@ -8,16 +8,16 @@ Module for converting state file
 """
 import inspect
 
-import salt.states.docker_container
+import salt.states.cron
+import saltext.salt_convert.utils.ansible.lookup as lookup_builtins
 import saltext.salt_convert.utils.inspect
-import saltext.salt_convert.utils.lookup as lookup_builtins
 
 
 def _setup():
     """
     Return the builtins this module should support",
     """
-    return ["docker_container", "community.docker.docker_container"]
+    return ["cron", "ansible.builtin.cron"]
 
 
 @lookup_builtins.lookup_decorator
@@ -29,24 +29,32 @@ def process(builtin_data, task, vars_data):
     # state as an arg
     state = "false"
     state_args = []
-    docker_container_states = {
-        "present": "docker_container.running",
-        "absent": "docker_container.absent",
-    }
+    cron_states = {"present": "cron.present", "absent": "cron.absent"}
     # manually add the args that are not automatically inspected further down
     # usually due to **kwargs usage or a mismatch in name
-    match_args = {"image": "image", "name": "name", "networks": "networks"}
+    match_args = {
+        "name": "comment",
+        "user": "user",
+        "minute": "minute",
+        "hour": "hour",
+        "month": "month",
+        "day": "daymonth",
+        "job": "name",
+        "special_time": "special",
+        "weekday": "dayweek",
+    }
 
     state = builtin_data.get("state")
     if not state:
         state = "present"
 
-    _, _func = docker_container_states[state].split(".")
+    _, _func = cron_states[state].split(".")
     salt_args = saltext.salt_convert.utils.inspect.function_args(
-        salt.states.docker_container,
+        salt.states.cron,
         _func,
         builtin_data,
     )
+    salt_args.remove("name")
 
     for _arg in salt_args:
         if _arg in builtin_data:
@@ -58,5 +66,5 @@ def process(builtin_data, task, vars_data):
             if not [x for x in state_args if _arg in x]:
                 state_args.append({match_args[_arg]: builtin_data[_arg]})
 
-    state_contents = {docker_container_states[state]: state_args}
+    state_contents = {cron_states[state]: state_args}
     return state_contents

@@ -7,6 +7,7 @@ Module for converting to state file
 
 """
 import importlib
+import json
 import logging
 import os
 import pathlib
@@ -37,23 +38,30 @@ def __virtual__():
     return __virtualname__
 
 
-def _setup_modules():
+def _setup_modules(module_type=None):
     """
     Load the utility modules
     """
     mod_builtins = {}
-    utils_path = pathlib.Path(__file__).parent.parent / "utils" / "modules"
+    if not module_type:
+        log.error("Need a module type")
+        return mod_builtins
+
+    utils_path = pathlib.Path(__file__).parent.parent / "utils" / module_type / "modules"
     for util_type in os.listdir(utils_path):
-        utils_path = pathlib.Path(__file__).parent.parent / "utils" / "modules" / util_type
+        utils_path = (
+            pathlib.Path(__file__).parent.parent / "utils" / module_type / "modules" / util_type
+        )
         for util_path in os.listdir(utils_path):
             fname, ext = os.path.splitext(util_path)
             if ext == ".py" and not fname.startswith("."):
-                mod_name = f"saltext.salt_convert.utils.modules.{util_type}.{fname}"
+                mod_name = f"saltext.salt_convert.utils.{module_type}.modules.{util_type}.{fname}"
                 imported_mod = importlib.import_module(mod_name)
                 if hasattr(imported_mod, "_setup"):
                     mods = imported_mod._setup()
-                    for _mod in mods:
-                        mod_builtins[_mod] = imported_mod.process
+                    if mods:
+                        for _mod in mods:
+                            mod_builtins[_mod] = imported_mod.process
     return mod_builtins
 
 
@@ -64,11 +72,11 @@ def get_state_file_root(env="base"):
     return pathlib.Path(__opts__.get("file_roots").get(env)[0])
 
 
-def generate_files(state, sls_name="default", file_type="sls", env="base"):
+def generate_files(state, sls_name="default", file_type="sls", env="base", convert_dir="converted"):
     """
     Generate an sls file for the minion with given state contents
     """
-    minion_state_root = get_state_file_root(env=env) / "ansible_convert"
+    minion_state_root = get_state_file_root(env=env) / convert_dir
 
     try:
         minion_state_root.mkdir(parents=True, exist_ok=True)
@@ -88,8 +96,8 @@ def generate_files(state, sls_name="default", file_type="sls", env="base"):
     return minion_state_file
 
 
-def files(path=None):
-    mod_builtins = _setup_modules()
+def ansible_files(path=None):
+    mod_builtins = _setup_modules(module_type="ansible")
 
     _files = []
     if not isinstance(path, dict):
@@ -120,7 +128,7 @@ def files(path=None):
             # Proccess vars
             for block in json_data:
                 if "vars_files" in block:
-                    vars_data = handle_vars(block["vars_files"], playbook_path)
+                    vars_data = handle_ansible_vars(block["vars_files"], playbook_path)
                 else:
                     vars_data = {}
 
@@ -227,11 +235,13 @@ def files(path=None):
                 )
             state_yaml = include_yaml + state_yaml
 
-            sls_files.append(generate_files(state=state_yaml, sls_name=state_name))
+            sls_files.append(
+                generate_files(state=state_yaml, sls_name=state_name, convert_dir="ansible_convert")
+            )
     return {"Converted playbooks to sls files": [str(x) for x in sls_files]}
 
 
-def handle_vars(path=None, parent_path=None):
+def handle_ansible_vars(path=None, parent_path=None):
     include_vars = {}
     _files = []
 
@@ -268,3 +278,79 @@ def handle_vars(path=None, parent_path=None):
             include_vars[var_include_name] = {"data": yaml_data, "file": str(vars_include_file)}
 
     return include_vars
+
+
+def chef_files(path=None):
+    mod_builtins = _setup_modules(module_type="chef")
+
+    _files = []
+    if not isinstance(path, dict):
+        _files = [path]
+    else:
+        _files = path
+
+    _files = [pathlib.Path(x) for x in _files]
+    # check if directory and add each file to _files dict
+    for _file in _files:
+        if _file.is_dir():
+            for _path in _file.iterdir():
+                _files.append(_path)
+                if _file in _files:
+                    _files.remove(_file)
+
+    state_contents = {}
+    sls_files = []
+    notify_tasks = {}
+    for _file in _files:
+        if not _file.is_file():
+            log.error(f"File {_file} does not exist, skipping")
+            continue
+        with salt.utils.files.fopen(_file, "r") as fp_:
+            json_data = _chef_parse(fp_.read())
+
+            for block in json_data:
+                builtin_func = mod_builtins.get(block["type"])
+                if builtin_func:
+                    data = builtin_func(block)
+                    state_name = f"{block['type']}_{block['name']}"
+                    state_contents[state_name] = data
+
+            state_yaml = yaml.dump(state_contents, Dumper=PrettyDumper, sort_keys=False)
+
+            sls_files.append(
+                generate_files(state=state_yaml, sls_name=state_name, convert_dir="chef_convert")
+            )
+
+    return {"Converted chef recipes to sls files": [str(x) for x in sls_files]}
+
+
+def _chef_parse(contents):
+    # Regex patterns to identify Chef resources
+    resource_pattern = re.compile(r"(\w+)\s'([^']+)'\sdo\n(.*?)\nend", re.DOTALL)
+    action_pattern = re.compile(r"action\s*(\[\s*:(\w+)(?:\s*,\s*:(\w+))*\s*\]|\s*:(\w+))")
+    attribute_pattern = re.compile(r"(\w+)\s+'([^']+)'")
+
+    parsed_data = []
+
+    # Find all resources in the recipe
+    resources = resource_pattern.findall(contents)
+
+    for resource in resources:
+        resource_type, resource_name, resource_body = resource
+        resource_dict = {"type": resource_type, "name": resource_name, "attributes": {}}
+
+        # Extract the action(s)
+        action_match = action_pattern.search(resource_body)
+        if action_match:
+            _action_match = re.sub(r"([\[\]:])", "", action_match.group(1))
+            actions = [action.strip() for action in _action_match.split(",")]
+            resource_dict["action"] = actions
+
+        # Extract other attributes (e.g., content, mode, owner)
+        attributes = attribute_pattern.findall(resource_body)
+        for attr_name, attr_value in attributes:
+            resource_dict["attributes"][attr_name] = attr_value
+
+        parsed_data.append(resource_dict)
+
+    return parsed_data

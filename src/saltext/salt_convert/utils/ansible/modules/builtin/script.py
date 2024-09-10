@@ -8,17 +8,17 @@ Module for converting state file
 """
 import inspect
 
-import salt.states.git
-import saltext.salt_convert.utils.helpers as helpers
+import salt.states.cmd
+import saltext.salt_convert.utils.ansible.helpers as helpers
+import saltext.salt_convert.utils.ansible.lookup as lookup_builtins
 import saltext.salt_convert.utils.inspect
-import saltext.salt_convert.utils.lookup as lookup_builtins
 
 
 def _setup():
     """
     Return the builtins this module should support",
     """
-    return ["git"]
+    return ["script"]
 
 
 @lookup_builtins.lookup_decorator
@@ -31,14 +31,14 @@ def process(builtin_data, task, vars_data):
     # state as an arg
     state = "false"
     state_args = []
-    git_states = {"false": "git.cloned"}
+    script_states = {"false": "cmd.script"}
     # manually add the args that are not automatically inspected further down
     # usually due to **kwargs usage or a mismatch in name
-    match_args = {"repo": "name", "dest": "target", "version": "branch"}
+    match_args = {"creates": "creates", "chdir": "cwd", "cmd": "name"}
 
-    _, _func = git_states[state].split(".")
+    _, _func = script_states[state].split(".")
     salt_args = saltext.salt_convert.utils.inspect.function_args(
-        salt.states.git,
+        salt.states.cmd,
         _func,
         builtin_data,
     )
@@ -51,5 +51,5 @@ def process(builtin_data, task, vars_data):
         if _arg in builtin_data:
             state_args.append({match_args[_arg]: builtin_data[_arg]})
 
-    state_contents = {git_states[state]: state_args}
+    state_contents = {script_states[state]: state_args}
     return state_contents

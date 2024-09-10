@@ -8,17 +8,25 @@ Module for converting state file
 """
 import inspect
 
-import salt.states.docker_image
-import saltext.salt_convert.utils.helpers as helpers
+try:
+    import salt.states.docker_image
+
+    DOCKER_STATE_AVAILABE = True
+except ImportError:
+    DOCKER_STATE_AVAILABE = False
+
+import saltext.salt_convert.utils.ansible.helpers as helpers
 import saltext.salt_convert.utils.inspect
-import saltext.salt_convert.utils.lookup as lookup_builtins
+import saltext.salt_convert.utils.ansible.lookup as lookup_builtins
 
 
 def _setup():
     """
     Return the builtins this module should support",
     """
-    return ["docker_image", "community.docker.docker_image"]
+    if DOCKER_STATE_AVAILABE:
+        return ["docker_image", "community.docker.docker_image"]
+    return []
 
 
 @lookup_builtins.lookup_decorator
