@@ -12,8 +12,6 @@ jobs:
   Pre-Commit:
     name: Pre-Commit
     runs-on: ubuntu-latest
-    container:
-      image: python:3.11-slim-bookworm
 
     steps:
 
