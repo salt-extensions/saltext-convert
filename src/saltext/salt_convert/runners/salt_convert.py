@@ -271,7 +271,10 @@ def handle_ansible_vars(path=None, parent_path=None):
             vars_yaml = yaml.dump(yaml_data)
 
             vars_include_file = generate_files(
-                state=vars_yaml, sls_name=var_include_name, file_type="yml"
+                state=vars_yaml,
+                sls_name=var_include_name,
+                file_type="yml",
+                convert_dir="ansible_convert",
             )
 
             include_vars[var_include_name] = {"data": yaml_data, "file": str(vars_include_file)}
