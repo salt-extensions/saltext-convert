@@ -14,46 +14,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - uses: actions/checkout@v3
-
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Set Cache Key
+        run: echo "PY=$(python --version --version | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
       - name: Install System Deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y enchant-2 git gcc make zlib1g-dev libc-dev libffi-dev g++ libxml2 libxml2-dev libxslt-dev libcurl4-openssl-dev libssl-dev libgnutls28-dev
-
-      - name: Add Git Safe Directory
-        run: |
-          git config --global --add safe.directory "$(pwd)"
-
-      - name: Install Pre-Commit
-        run: |
-          # TODO: Update pip version without error
-          #          python -m pip install --upgrade pip
-          python -m pip install pip==19.3.1
-          pip install pre-commit
-          pre-commit install --install-hooks
-
-      - name: Check ALL Files On Branch
-        if: github.event_name != 'pull_request'
-        run: |
-          pre-commit run --show-diff-on-failure --color=always --all-files
-
-      - name: Check Changed Files On PR
-        if: github.event_name == 'pull_request' && fromJSON(inputs.changed-files)['repo'] == 'true'
-        run: |
-          pre-commit run --show-diff-on-failure --color=always --files ${{ join(fromJSON(inputs.changed-files)['repo_files'], ' ') }}
-
-      - name: Set Exit Status
-        if: always()
-        run: |
-          mkdir exitstatus
-          echo "${{ job.status }}" > exitstatus/${{ github.job }}
-
-      - name: Upload Exit Status
-        if: always()
-        uses: actions/upload-artifact@v3
+          sudo apt-get install -y libxml2 libxml2-dev libxslt-dev
+      - uses: actions/cache@v3
         with:
-          name: exitstatus
-          path: exitstatus
-          if-no-files-found: error
+          path: ~/.cache/pre-commit
+          key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
+      - uses: pre-commit/action@v3.0.0
