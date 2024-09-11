@@ -3,8 +3,8 @@
 # pylint: disable=import-error
 import pathlib
 
-import pytest  # pylint: disable=3rd-party-module-not-gated
-import salt.runners.state as state_mod_runner  # pylint: disable=3rd-party-module-not-gated
+import pytest
+import salt.runners.state as state_mod_runner
 import saltext.salt_convert.runners.salt_convert as salt_convert_runner
 
 # pylint: enable=import-error

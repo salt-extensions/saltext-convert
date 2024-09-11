@@ -1,4 +1,4 @@
-import pytest  # pylint: disable=3rd-party-module-not-gated
+import pytest
 
 
 @pytest.fixture(scope="package")

@@ -1,8 +1,8 @@
 import logging
 import shutil
 
-import pytest  # pylint: disable=3rd-party-module-not-gated
-from saltfactories.utils.functional import Loaders  # pylint: disable=3rd-party-module-not-gated
+import pytest
+from saltfactories.utils.functional import Loaders
 
 log = logging.getLogger(__name__)
 

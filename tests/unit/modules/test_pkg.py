@@ -1,8 +1,8 @@
 import locale
 
-import pytest  # pylint: disable=3rd-party-module-not-gated
+import pytest
 import saltext.salt_convert.runners.salt_convert as salt_convert_runner
-import yaml  # pylint: disable=3rd-party-module-not-gated
+import yaml
 
 
 @pytest.fixture
@@ -21,9 +21,7 @@ def test_pkg_playbook_to_sls(tmp_path):
     """
     playbook = tmp_path / "service-playbook.yml"
 
-    with open(  # pylint: disable=resource-leakage
-        file=playbook, mode="w", encoding=locale.getpreferredencoding()
-    ) as fp_:
+    with open(file=playbook, mode="w", encoding=locale.getpreferredencoding()) as fp_:
         yaml.dump(
             [
                 {
@@ -44,9 +42,7 @@ def test_pkg_playbook_to_sls(tmp_path):
     sls_file = salt_convert_runner.ansible_files(path=playbook)["Converted playbooks to sls files"][
         0
     ]
-    with open(  # pylint: disable=resource-leakage
-        file=sls_file, encoding=locale.getpreferredencoding()
-    ) as fp_:
+    with open(file=sls_file, encoding=locale.getpreferredencoding()) as fp_:
         ret = yaml.safe_load(fp_)
 
     assert ret == {"postgresql latest version": {"pkg.latest": [{"pkgs": "postgresql"}]}}
@@ -59,9 +55,7 @@ def test_pkg_playbook_to_sls_with_items(tmp_path):
     """
     playbook = tmp_path / "service-playbook.yml"
 
-    with open(  # pylint: disable=resource-leakage
-        file=playbook, mode="w", encoding=locale.getpreferredencoding()
-    ) as fp_:
+    with open(file=playbook, mode="w", encoding=locale.getpreferredencoding()) as fp_:
         yaml.dump(
             [
                 {
@@ -83,9 +77,7 @@ def test_pkg_playbook_to_sls_with_items(tmp_path):
     sls_file = salt_convert_runner.ansible_files(path=playbook)["Converted playbooks to sls files"][
         0
     ]
-    with open(  # pylint: disable=resource-leakage
-        file=sls_file, encoding=locale.getpreferredencoding()
-    ) as fp_:
+    with open(file=sls_file, encoding=locale.getpreferredencoding()) as fp_:
         ret = yaml.safe_load(fp_)
 
     assert ret == {
@@ -102,9 +94,7 @@ def test_pkg_playbook_to_sls_apt_string(tmp_path):
     """
     playbook = tmp_path / "service-playbook.yml"
 
-    with open(  # pylint: disable=resource-leakage
-        file=playbook, mode="w", encoding=locale.getpreferredencoding()
-    ) as fp_:
+    with open(file=playbook, mode="w", encoding=locale.getpreferredencoding()) as fp_:
         yaml.dump(
             [
                 {
@@ -125,9 +115,7 @@ def test_pkg_playbook_to_sls_apt_string(tmp_path):
     sls_file = salt_convert_runner.ansible_files(path=playbook)["Converted playbooks to sls files"][
         0
     ]
-    with open(  # pylint: disable=resource-leakage
-        file=sls_file, encoding=locale.getpreferredencoding()
-    ) as fp_:
+    with open(file=sls_file, encoding=locale.getpreferredencoding()) as fp_:
         ret = yaml.safe_load(fp_)
 
     assert ret == {"postgresql latest version": {"pkg.latest": [{"pkgs": "postgresql"}]}}
@@ -140,9 +128,7 @@ def test_pkg_playbook_to_sls_apt_dict(tmp_path):
     """
     playbook = tmp_path / "service-playbook.yml"
 
-    with open(  # pylint: disable=resource-leakage
-        file=playbook, mode="w", encoding=locale.getpreferredencoding()
-    ) as fp_:
+    with open(file=playbook, mode="w", encoding=locale.getpreferredencoding()) as fp_:
         yaml.dump(
             [
                 {
@@ -168,9 +154,7 @@ def test_pkg_playbook_to_sls_apt_dict(tmp_path):
     sls_file = salt_convert_runner.ansible_files(path=playbook)["Converted playbooks to sls files"][
         0
     ]
-    with open(  # pylint: disable=resource-leakage
-        file=sls_file, encoding=locale.getpreferredencoding()
-    ) as fp_:
+    with open(file=sls_file, encoding=locale.getpreferredencoding()) as fp_:
         ret = yaml.safe_load(fp_)
 
     assert ret == {"postgresql latest version": {"pkg.latest": [{"pkgs": "postgresql"}]}}

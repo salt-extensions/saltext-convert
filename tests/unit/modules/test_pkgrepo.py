@@ -1,8 +1,8 @@
 import locale
 
-import pytest  # pylint: disable=3rd-party-module-not-gated
+import pytest
 import saltext.salt_convert.runners.salt_convert as salt_convert_runner
-import yaml  # pylint: disable=3rd-party-module-not-gated
+import yaml
 
 
 @pytest.fixture
@@ -21,9 +21,7 @@ def test_pkg_playbook_to_sls(tmp_path):
     """
     playbook = tmp_path / "service-playbook.yml"
 
-    with open(
-        file=playbook, mode="w", encoding=locale.getpreferredencoding()
-    ) as fp_:  # pylint: disable=resource-leakage
+    with open(file=playbook, mode="w", encoding=locale.getpreferredencoding()) as fp_:
         yaml.dump(
             [
                 {
@@ -48,9 +46,7 @@ def test_pkg_playbook_to_sls(tmp_path):
     sls_file = salt_convert_runner.ansible_files(path=playbook)["Converted playbooks to sls files"][
         0
     ]
-    with open(
-        file=sls_file, encoding=locale.getpreferredencoding()
-    ) as fp_:  # pylint: disable=resource-leakage
+    with open(file=sls_file, encoding=locale.getpreferredencoding()) as fp_:
         ret = yaml.safe_load(fp_)
 
     assert ret == {

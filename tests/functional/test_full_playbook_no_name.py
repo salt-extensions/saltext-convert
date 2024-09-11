@@ -2,7 +2,7 @@
 #
 import pathlib
 
-import pytest  # pylint: disable=3rd-party-module-not-gated
+import pytest
 import saltext.salt_convert.runners.salt_convert as salt_convert_runner
 
 
