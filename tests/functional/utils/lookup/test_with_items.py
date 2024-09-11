@@ -37,7 +37,9 @@ def test_playbook_with_items_nonsupported_list():
     """
     path = pathlib.Path(__file__).parent / "files" / "playbook-with-items-list.yml"
 
-    sls_file = salt_convert_runner.files(path=str(path))["Converted playbooks to sls files"][0]
+    sls_file = salt_convert_runner.ansible_files(path=str(path))[
+        "Converted playbooks to sls files"
+    ][0]
 
     ret = state_mod_runner.orchestrate_show_sls(
         f"ansible_convert.{pathlib.Path(sls_file).name.split('.')[0]}"

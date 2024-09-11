@@ -86,7 +86,9 @@ def test_docker_image_absent(tmp_path):
             fp_,
         )
 
-    sls_file = salt_convert_runner.files(path=playbook)["Converted playbooks to sls files"][0]
+    sls_file = salt_convert_runner.ansible_files(path=playbook)["Converted playbooks to sls files"][
+        0
+    ]
     with open(
         file=sls_file, encoding=locale.getpreferredencoding()
     ) as fp_:  # pylint: disable=resource-leakage

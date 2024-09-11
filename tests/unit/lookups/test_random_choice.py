@@ -47,7 +47,9 @@ def test_lookup_with_random_choice(tmp_path):
             _fd,
         )
 
-    sls_file = salt_convert_runner.files(path=playbook)["Converted playbooks to sls files"][0]
+    sls_file = salt_convert_runner.ansible_files(path=playbook)["Converted playbooks to sls files"][
+        0
+    ]
     with open(
         file=sls_file, encoding=locale.getpreferredencoding()
     ) as _fd:  # pylint: disable=resource-leakage
