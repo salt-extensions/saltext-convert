@@ -192,7 +192,7 @@ def ansible_files(path=None):
                                         state_contents[handler_name]
                                     )
 
-                    for notify_task in notify_tasks.items():
+                    for notify_task, val in notify_tasks.items():
                         if notify_task in handler_states:
                             for state_name in notify_tasks[notify_task]:
                                 if state_name in state_contents:

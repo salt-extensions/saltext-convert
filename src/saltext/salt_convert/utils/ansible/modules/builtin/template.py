@@ -51,7 +51,7 @@ def process(builtin_data, task, vars_data=None):
         if _arg in builtin_data:
             state_args.append({_arg: builtin_data[_arg]})
 
-    for _arg in template_global_args.items():
+    for _arg, _val in template_global_args.items():
         if _arg in builtin_data:
             state_args.append({template_global_args[_arg]: builtin_data[_arg]})
 

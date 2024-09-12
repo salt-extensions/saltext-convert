@@ -70,7 +70,7 @@ def process(builtin_data, task, vars_data=None):
             else:
                 state_args.append({_arg: builtin_data[_arg]})
 
-    for _arg in file_global_args.items():
+    for _arg, _val in file_global_args.items():
         if _arg in builtin_data:
             state_args.append({file_global_args[_arg]: builtin_data[_arg]})
 
