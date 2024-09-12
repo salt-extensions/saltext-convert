@@ -5,9 +5,8 @@ Module for converting state file
 .. versionadded:: 0.0.1
 
 """
-import inspect
-
 import salt.states.cmd
+
 import saltext.salt_convert.utils.ansible.helpers as helpers
 import saltext.salt_convert.utils.ansible.lookup as lookup_builtins
 import saltext.salt_convert.utils.inspect
@@ -46,7 +45,7 @@ def process(builtin_data, task, vars_data):
         if _arg in builtin_data:
             state_args.append({_arg: builtin_data[_arg]})
 
-    for _arg in match_args:
+    for _arg in match_args.items():
         if _arg in builtin_data:
             state_args.append({match_args[_arg]: builtin_data[_arg]})
 

@@ -1,8 +1,9 @@
 import os
 
 import pytest
-from saltext.salt_convert import PACKAGE_ROOT
 from saltfactories.utils import random_string
+
+from saltext.salt_convert import PACKAGE_ROOT
 
 
 @pytest.fixture(scope="session")

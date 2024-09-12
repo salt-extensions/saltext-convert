@@ -5,6 +5,7 @@ import pathlib
 
 import pytest
 import salt.runners.state as state_mod_runner
+
 import saltext.salt_convert.runners.salt_convert as salt_convert_runner
 
 # pylint: enable=import-error

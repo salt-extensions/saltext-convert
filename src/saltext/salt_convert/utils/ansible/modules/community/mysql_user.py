@@ -5,8 +5,6 @@ Module for converting state file
 .. versionadded:: 0.0.1
 
 """
-import inspect
-
 try:
     import salt.states.mysql_user
 
@@ -15,8 +13,8 @@ except ImportError:
     MYSQL_STATE_AVAILABLE = False
 
 import saltext.salt_convert.utils.ansible.helpers as helpers
-import saltext.salt_convert.utils.inspect
 import saltext.salt_convert.utils.ansible.lookup as lookup_builtins
+import saltext.salt_convert.utils.inspect
 
 
 def _setup():
@@ -66,7 +64,7 @@ def process(builtin_data, task, var_data=None):
             if not [x for x in state_args if _arg in x]:
                 state_args.append({_arg: builtin_data[_arg]})
 
-    for _arg in match_args:
+    for _arg in match_args.items():
         if _arg in builtin_data:
             if not [x for x in state_args if _arg in x]:
                 state_args.append({match_args[_arg]: builtin_data[_arg]})

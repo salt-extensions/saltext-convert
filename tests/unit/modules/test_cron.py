@@ -1,8 +1,9 @@
 import locale
 
 import pytest
-import saltext.salt_convert.runners.salt_convert as salt_convert_runner
 import yaml
+
+import saltext.salt_convert.runners.salt_convert as salt_convert_runner
 
 
 @pytest.fixture

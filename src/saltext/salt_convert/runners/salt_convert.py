@@ -6,7 +6,6 @@ Module for converting to state file
 
 """
 import importlib
-import json
 import logging
 import os
 import pathlib
@@ -15,7 +14,6 @@ import re
 import salt.daemons.masterapi  # pylint: disable=import-error
 import salt.utils.files  # pylint: disable=import-error
 import yaml
-
 
 __virtualname__ = "convert"
 
@@ -80,10 +78,11 @@ def generate_files(state, sls_name="default", file_type="sls", env="base", conve
     try:
         minion_state_root.mkdir(parents=True, exist_ok=True)
     except PermissionError:
-        log.warning(
+        log_mesg = (
             f"Unable to create directory {str(minion_state_root)}.  "
             "Check that the salt user has the correct permissions."
         )
+        log.warning(log_mesg)
         return False
 
     minion_state_file = minion_state_root / f"{sls_name}.{file_type}"
@@ -118,7 +117,7 @@ def ansible_files(path=None):
     notify_tasks = {}
     for _file in _files:
         if not _file.is_file():
-            log.error(f"File {_file} does not exist, skipping")
+            log.error("File %s does not exist, skipping", _file)
             continue
         with salt.utils.files.fopen(_file, "r") as fp_:
             json_data = yaml.safe_load(fp_.read())
@@ -193,7 +192,7 @@ def ansible_files(path=None):
                                         state_contents[handler_name]
                                     )
 
-                    for notify_task in notify_tasks:
+                    for notify_task in notify_tasks.items():
                         if notify_task in handler_states:
                             for state_name in notify_tasks[notify_task]:
                                 if state_name in state_contents:
@@ -305,7 +304,7 @@ def chef_files(path=None):
     notify_tasks = {}
     for _file in _files:
         if not _file.is_file():
-            log.error(f"File {_file} does not exist, skipping")
+            log.error("File %s does not exist, skipping", _file)
             continue
         with salt.utils.files.fopen(_file, "r") as fp_:
             json_data = _chef_parse(fp_.read())

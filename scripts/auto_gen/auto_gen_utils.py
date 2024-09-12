@@ -18,7 +18,6 @@ import yaml
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 
-
 log = logging.getLogger(__name__)
 
 
