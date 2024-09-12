@@ -1,4 +1,4 @@
-import inspect
+import inspect  # pylint: disable=import-self
 
 
 def function_args(module, func, builtin_data):
